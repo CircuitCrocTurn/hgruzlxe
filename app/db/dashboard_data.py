@@ -819,21 +819,31 @@ async def build_active_chat_ctx(
     user: User,
     chat: Chat,
     hh_phone: str | None,
+    habr_email: str | None = None,
     fetch_remote: bool = False,
 ) -> dict[str, Any]:
     """Собрать контекст активного диалога: шапка + все сообщения.
 
     Дефолт — ``fetch_remote=False``: контекст собирается чисто из БД,
-    что укладывается в ~50ms (vs ~1-2s c походом на hh.ru). Фронт
-    отдельно дёргает ``POST /api/chats/<id>/refresh``, чтобы догрузить
-    свежие сообщения с hh.ru — и обновить DOM по факту. Так нет
+    что укладывается в ~50ms (vs ~1-2s c походом на удалённый API).
+    Фронт отдельно дёргает ``POST /api/chats/<id>/refresh``, чтобы
+    догрузить свежие сообщения и обновить DOM по факту. Так нет
     «подвисания» при клике на чат, а данные подтягиваются прозрачно.
 
-    Если ``fetch_remote=True`` и есть ``hh_phone`` — синхронно тянем
-    свежую историю с ``chatik.hh.ru/chatik/api/chat_data`` и апсёртим
-    её в локальный ``messages``. Сетевой провал не валит рендер.
+    Если ``fetch_remote=True`` и есть креды для площадки чата —
+    синхронно тянем свежую историю и апсёртим её в локальный
+    ``messages``. Сетевой провал не валит рендер.
+
+    Маршрут «куда идти за свежими сообщениями» определяется
+    ``chat.service``:
+
+    * ``hh``   — ``chatik.hh.ru/chatik/api/chat_data`` (нужен
+      ``hh_phone`` из cookie-сессии / ``user.phone_number``);
+    * ``habr`` — ``career.habr.com/api/frontend_v1/chat/messages`` (нужен
+      ``habr_email``; cookies лежат в
+      ``platform_credentials.encrypted_session`` по ``user_id``).
     """
-    if fetch_remote and hh_phone and chat.service == "hh":
+    if fetch_remote and chat.service == "hh" and hh_phone:
         from app.services.job_sites.hh.chats_sync import (
             sync_hh_chat_messages_for_user,
         )
@@ -845,6 +855,19 @@ async def build_active_chat_ctx(
         except Exception:
             # Логирование — внутри sync_hh_chat_messages_for_user; здесь
             # просто не валим рендер страницы.
+            pass
+    elif fetch_remote and chat.service == "habr":
+        from app.services.job_sites.habr.chats_sync import (
+            sync_habr_chat_messages_for_user,
+        )
+
+        try:
+            await sync_habr_chat_messages_for_user(
+                db, user_id=user.id, chat=chat,
+                habr_email=habr_email or "",
+            )
+        except Exception:
+            # Логирование — внутри sync_habr_chat_messages_for_user.
             pass
 
     messages_rows = (

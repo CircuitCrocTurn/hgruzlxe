@@ -5,6 +5,27 @@
 `Message` в БД, отрисовать в `/chats` и слать сообщения через тот же
 бэкенд, что и hh.ru-чаты.
 
+> **Статус: реализовано.** Все эндпойнты, описанные ниже, замонтированы и
+> протестированы на HAR-трейсе и трёх HTML-снимках. Главные точки входа
+> в коде:
+>
+> | Что | Где |
+> | --- | --- |
+> | HTTP-методы клиента (`_frontend_get_json`, `fetch_users_me`, `fetch_authenticity_token`, `fetch_conversations_html`, `fetch_chat_messages_page`, `toggle_chat_read_state`, `send_chat_message`) + `HabrAuthError` | `app/services/job_sites/habr/__init__.py` |
+> | Devalue-парсер `__NUXT_DATA__`, маппинг `Chat`/`Message`, `sync_habr_chats_for_user`, `sync_habr_chat_messages_for_user`, `mark_habr_chat_read_for_user`, `send_habr_chat_message_for_user` | `app/services/job_sites/habr/chats_sync.py` |
+> | Запуск habr-sync параллельно с hh-sync, ветвление по `chat.service` для `/refresh`, `/read`, `/messages`, поддержка `fetch_remote=True` в `build_active_chat_ctx` | `app/api/dashboard.py`, `app/db/dashboard_data.py` |
+>
+> Devalue-парсер прогнан на `chats1/2/3.html` — корректно извлекает
+> `conversationsListWithSelectedLoginConversation[0]` с полями
+> `login=dashaas`, `fullName=Дарья Сергейчик`, `companyName=Aston`,
+> `subject={text, href}`, `unreadMessagesCount`, `lastMessage{id, body,
+> createdAt, isMine, authorLogin, read, attachments}`.
+>
+> Что **не** входит в текущий PR (намеренно, чтобы не раздувать диф):
+> WebSocket/Pusher live-апдейты (наш фронт и так дёргает `chats/sync`
+> по лоаду), вложения (`chat_attachment_uuids` пробрасывается, но UI
+> загрузки нет), `share_contacts`/`make_offer`/`job_invite`.
+
 Источники данных, на которых построен разбор:
 
 * HAR-архив `career.habr.com_Archive 26-05-17 17-31-47.har` — реальная
@@ -14,12 +35,12 @@
   `chats2.html`, `chats3.html` — три стадии одной и той же страницы
   `/conversations/dashaas` (см. ниже, какие именно).
 
-Текущее состояние кода — в проекте уже есть готовая инфраструктура
-под чаты hh.ru (`app/services/job_sites/hh/chats_sync.py`,
+Изначальное состояние кода (до этого PR) — в проекте уже была готовая
+инфраструктура под чаты hh.ru (`app/services/job_sites/hh/chats_sync.py`,
 `/api/chats/sync`, таблицы `chats` / `messages`, шаблон `chats.html`).
-Habr-клиент (`app/services/job_sites/habr/__init__.py`) умеет логиниться,
-обходить онбординг и откликаться на вакансии — про чаты он ещё ничего
-не знает.
+Habr-клиент (`app/services/job_sites/habr/__init__.py`) умел логиниться,
+обходить онбординг и откликаться на вакансии — про чаты он ничего
+не знал.
 
 ## 1. Три стадии страницы
 

@@ -33,6 +33,8 @@ from app.db.models import (
     Subscription,
     User,
 )
+from app.db.models.chat import SERVICE_HABR, SERVICE_HH
+from app.db.models.platform_credential import STATUS_ACTIVE as PC_STATUS_ACTIVE
 from app.db.models.subscription import (
     PLAN_BASIC,
     PLAN_FREE,
@@ -55,6 +57,7 @@ from app.services.job_sites.habr.auth_flow import (
 )
 from app.services.job_sites.registry import (
     PLATFORM_HABR,
+    PLATFORM_HH,
     is_supported as is_supported_platform,
 )
 
@@ -845,97 +848,171 @@ async def me_resume_refresh(
 # ── /api/chats ─────────────────────────────────────────────────────────
 @router.post("/chats/sync")
 async def chats_sync(request: Request, db: AsyncSession = Depends(get_db)):
-    """Синхронизация чатов с hh.ru.
+    """Синхронизация чатов с hh.ru и career.habr.com.
 
-    Идёт на ``chatik.hh.ru/chatik/api/chats``, листает страницы по 20,
-    фильтрует (см. ``app.services.job_sites.hh.chats_sync.is_chat_visible``:
-    «работодатель ответил, не отказом») и апсертит в таблицы ``chats`` /
-    ``messages``. Возвращает счётчики:
+    Дёргается фронтом ``chats.html`` при лоаде страницы. Запускает
+    параллельно sync для всех площадок, которые у юзера активны
+    в ``platform_credentials`` (``status='active'``):
+
+    * **hh.ru** — ``app.services.job_sites.hh.chats_sync.sync_hh_chats_for_user``
+      ходит на ``chatik.hh.ru/chatik/api/chats``, листает страницы
+      по 20, фильтрует ``is_chat_visible`` («работодатель ответил, не
+      отказом») и апсертит в ``chats`` / ``messages``.
+    * **habr** — ``app.services.job_sites.habr.chats_sync.sync_habr_chats_for_user``
+      листает HTML ``career.habr.com/conversations`` (читает
+      гидрационный payload ``__NUXT_DATA__`` через devalue-парсер),
+      апсертит то же.
+
+    Возвращает агрегированные счётчики:
 
         {
             "ok": true,
-            "seen":    <всего пришло из API>,
-            "visible": <прошли фильтр «ответ, не отказ»>,
-            "saved":   <апсерт-нуто строк>
+            "seen":   <всего пришло из API>,
+            "saved":  <апсерт-нуто строк>,
+            "per_service": {
+                "hh":   {"ok": ..., "seen": ..., "saved": ...},
+                "habr": {"ok": ..., "seen": ..., "saved": ...}
+            },
+            "chats": [...]   # снимок левой панели для фронта
         }
 
     HTTP-ошибки:
-        * 400 ``no_hh_session`` — в сессии нет ``hh_phone``;
-        * 401 ``hh_session_expired`` — cookies протухли, нужен новый OTP.
+        * 400 ``no_platforms`` — у юзера нет ни одной активной площадки.
 
-    Эндпойнт идемпотентный и предназначен для дёрганья из фронта при
-    лоаде страницы ``/chats``. Долгий (несколько секунд), поэтому
-    рендер страницы не блокирует — UI обновится поверх по DB.
+    Ошибки внутри каждого sync (auth expired, network) НЕ валят запрос:
+    они оседают в ``per_service[<slug>].ok=false`` + ``error``/``message``,
+    UI показывает баннер на той площадке, где сломалось. Остальные
+    апдейтятся как ни в чём не бывало.
+
+    Эндпойнт идемпотентный.
     """
-    # Локальный импорт: вытаскивать sync_hh_chats_for_user на уровень
-    # модуля смысла нет (тяжёлый граф зависимостей aiohttp+twocaptcha).
-    from app.services.job_sites.hh import HHAuthError
-    from app.services.job_sites.hh.chats_sync import sync_hh_chats_for_user
+    import asyncio
 
     user = await _require_user(request, db)
 
-    # Приоритет источников телефона:
-    # 1) ``hh_phone`` из cookie-сессии (свежий логин в браузере);
-    # 2) ``user.phone_number`` из БД — если юзер залогинился раньше и
-    #    сессия пересоздалась/он зашёл с другого устройства. Cookies
-    #    hh.ru всё равно лежат в ``platform_credentials.encrypted_session``
-    #    по ``user_id``, а сам ``hh_phone`` нам нужен только для
-    #    per-user lock (см. ``hh_user_lock``).
+    # Определяем, какие площадки подключены. Активная = есть строка
+    # в ``platform_credentials`` со ``status='active'``. Это тот же
+    # источник истины, что и /settings, и воркер очереди.
+    active_platforms: set[str] = set(
+        (
+            await db.execute(
+                select(PlatformCredential.platform).where(
+                    PlatformCredential.user_id == user.id,
+                    PlatformCredential.status == PC_STATUS_ACTIVE,
+                )
+            )
+        ).scalars().all()
+    )
+
+    # hh.ru идёт ещё и через ``hh_phone`` (per-user lock и SMS-перелогин),
+    # поэтому считаем подключённой только если есть и креды, и телефон.
     hh_phone = request.session.get("hh_phone") or user.phone_number
-    if not hh_phone:
-        logger.warning(
-            "chats_sync: user=%s has no hh_phone in session and no phone_number in DB",
-            user.id,
+    habr_email = _habr_email_for(user)
+
+    tasks: dict[str, Any] = {}
+    if PLATFORM_HH in active_platforms and hh_phone:
+        from app.services.job_sites.hh.chats_sync import (
+            sync_hh_chats_for_user,
         )
+
+        tasks[PLATFORM_HH] = sync_hh_chats_for_user(
+            user_id=user.id, hh_phone=hh_phone,
+        )
+    if PLATFORM_HABR in active_platforms:
+        from app.services.job_sites.habr.chats_sync import (
+            sync_habr_chats_for_user,
+        )
+
+        tasks[PLATFORM_HABR] = sync_habr_chats_for_user(
+            user_id=user.id, habr_email=habr_email or "",
+        )
+
+    if not tasks:
+        # Нет ни одной площадки, с которой имеет смысл синкаться.
+        # Это не серверная ошибка — просто фронт зря дёрнул. Отдаём
+        # 400, чтобы UI показал «подключите площадку в /settings».
         raise HTTPException(
             status_code=400,
             detail={
-                "error": "no_hh_session",
+                "error": "no_platforms",
                 "message": (
-                    "Нет привязки к hh.ru. Войдите в аккаунт hh.ru через "
-                    "/settings."
+                    "Не подключена ни одна площадка для чатов. "
+                    "Войдите в hh.ru или habr через /settings."
                 ),
             },
         )
 
-    try:
-        stats = await sync_hh_chats_for_user(
-            user_id=user.id,
-            hh_phone=hh_phone,
-        )
-    except HHAuthError:
-        raise HTTPException(
-            status_code=401,
-            detail={
+    # ``return_exceptions=True`` — чтобы падение одного sync'а не валило
+    # все остальные. Каждую ошибку разворачиваем индивидуально.
+    slugs = list(tasks.keys())
+    results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+
+    from app.services.job_sites.habr import HabrAuthError
+    from app.services.job_sites.hh import HHAuthError
+
+    per_service: dict[str, dict[str, Any]] = {}
+    total_seen = 0
+    total_saved = 0
+    for slug, result in zip(slugs, results):
+        if isinstance(result, HHAuthError):
+            per_service[slug] = {
+                "ok": False,
                 "error": "hh_session_expired",
                 "message": "Сессия hh.ru истекла. Войдите заново.",
-            },
-        )
-    except Exception as exc:  # noqa: BLE001
-        # Иначе фронт видит только «ошибка синхронизации» без деталей.
-        # В рабочих логах остаётся полный трейсбэк через logger.exception.
-        logger.exception("chats_sync failed for user=%s", user.id)
-        raise HTTPException(
-            status_code=500,
-            detail={
+            }
+            continue
+        if isinstance(result, HabrAuthError):
+            per_service[slug] = {
+                "ok": False,
+                "error": "habr_session_expired",
+                "message": "Сессия habr истекла. Войдите заново.",
+            }
+            continue
+        if isinstance(result, Exception):
+            logger.exception(
+                "chats_sync %s failed for user=%s", slug, user.id,
+                exc_info=result,
+            )
+            per_service[slug] = {
+                "ok": False,
                 "error": "sync_failed",
-                "message": str(exc) or exc.__class__.__name__,
-            },
-        )
+                "message": str(result) or result.__class__.__name__,
+            }
+            continue
+        stats = result if isinstance(result, dict) else {}
+        per_service[slug] = {"ok": True, **stats}
+        total_seen += int(stats.get("seen") or 0)
+        total_saved += int(stats.get("saved") or 0)
 
-    # Возвращаем не только счётчики, но и свежий снимок списка чатов
-    # (та же шейпа, что и при SSR). Фронт ``chats.html`` по этому
-    # снимку перерисовывает левую панель — без полного reload страницы.
-    # Это лечит сценарий «написал на hh.ru → у нас в офере должен
-    # подъехать новый порядок/превью», который раньше требовал
-    # ручного F5.
+    # Снимок левой панели — на нём фронт перерисовывает список чатов,
+    # без полного reload страницы.
     chats_snapshot = await list_chat_cards(db, user_id=user.id)
-    return {"ok": True, **stats, "chats": chats_snapshot}
+    return {
+        "ok": True,
+        "seen": total_seen,
+        "saved": total_saved,
+        "per_service": per_service,
+        "chats": chats_snapshot,
+    }
 
 
 def _hh_phone_for(user: User, request: Request) -> str | None:
     """Извлечь hh-телефон: приоритет — сессия, fallback — БД (`user.phone_number`)."""
     return request.session.get("hh_phone") or user.phone_number
+
+
+def _habr_email_for(user: User) -> str | None:
+    """Извлечь habr-логин: основной ``user.email``, fallback — ``user.temp_email``.
+
+    Хабр-аккаунт юзера живёт под основным email (``user.email`` после
+    ``confirm_email_change``), но если основной ещё не подтверждён —
+    он на ``user.temp_email`` (выдаётся через ``temp.coda.ink``).
+    Cookies сессии всё равно лежат в
+    ``platform_credentials.encrypted_session`` по ``user_id``, так что
+    email тут нужен в первую очередь для OTP-бриджа и автоматического
+    перелогина (см. ``HabrClient._load_habr_login_credentials``).
+    """
+    return user.email or user.temp_email
 
 
 async def _chat_by_uuid(
@@ -996,7 +1073,7 @@ async def chats_refresh_history(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    """Догрузить полную историю с hh.ru ``chat_data`` и вернуть актуальный
+    """Догрузить полную историю диалога с площадки и вернуть актуальный
     ``active_chat``.
 
     Эндпойнт намеренно отделён от ``GET /api/chats/<id>``, чтобы тяжёлый
@@ -1005,14 +1082,24 @@ async def chats_refresh_history(
     вызывает его в фоне после первого рендера и просто перерисовывает
     DOM, если что-то добавилось.
 
+    Куда идём — определяется ``chat.service``:
+
+    * ``hh``   → ``chatik.hh.ru/chatik/api/chat_data`` (через
+      ``sync_hh_chat_messages_for_user``).
+    * ``habr`` → ``career.habr.com/api/frontend_v1/chat/messages?login=…``
+      (через ``sync_habr_chat_messages_for_user``).
+
     Сетевые ошибки не пробрасываются наверх — отдаём то, что в БД.
     """
     user = await _require_user(request, db)
     chat = await _chat_by_uuid(db, user_id=user.id, chat_uuid_raw=chat_uuid)
 
     hh_phone = _hh_phone_for(user, request)
+    habr_email = _habr_email_for(user)
     active_chat = await build_active_chat_ctx(
-        db, user=user, chat=chat, hh_phone=hh_phone, fetch_remote=True,
+        db, user=user, chat=chat,
+        hh_phone=hh_phone, habr_email=habr_email,
+        fetch_remote=True,
     )
     await db.commit()
 
@@ -1081,47 +1168,92 @@ async def chats_mark_read(
     )
     await db.commit()
 
-    # 2) Идём в hh.ru. Если телефон не привязан или сессия истекла —
-    #    возвращаем 200 с ``hh_marked=false``, локально-то уже прочитано.
-    hh_phone = _hh_phone_for(user, request)
-    if not hh_phone:
-        return {"ok": True, "hh_marked": False, "reason": "no_hh_session"}
+    # 2) Идём на площадку. Если креды не привязаны или сессия истекла —
+    #    возвращаем 200 с ``remote_marked=false``, локально-то уже прочитано.
+    if chat.service == SERVICE_HH:
+        hh_phone = _hh_phone_for(user, request)
+        if not hh_phone:
+            return {
+                "ok": True, "hh_marked": False,
+                "remote_marked": False, "reason": "no_hh_session",
+            }
 
-    # messageId для mark_read: приоритет — last_viewed_message_id
-    # (мы только что выставили его на самое свежее), fallback —
-    # max(Message.external_id) этого чата.
-    message_id = chat.last_viewed_message_id or last_msg_ext
-    if not message_id:
-        return {"ok": True, "hh_marked": False, "reason": "no_message_id"}
+        # messageId для mark_read: приоритет — last_viewed_message_id
+        # (мы только что выставили его на самое свежее), fallback —
+        # max(Message.external_id) этого чата.
+        message_id = chat.last_viewed_message_id or last_msg_ext
+        if not message_id:
+            return {
+                "ok": True, "hh_marked": False,
+                "remote_marked": False, "reason": "no_message_id",
+            }
 
-    from app.services.job_sites.hh import HHAuthError
-    from app.services.job_sites.hh.chats_sync import (
-        REJECTED_APPLICANT_STATES,
-        mark_hh_chat_read_for_user,
-    )
-
-    try:
-        await mark_hh_chat_read_for_user(
-            user_id=user.id,
-            hh_phone=hh_phone,
-            chat_external_id=chat.external_id,
-            message_id=str(message_id),
-            has_unread_discard=(chat.applicant_state in REJECTED_APPLICANT_STATES),
+        from app.services.job_sites.hh import HHAuthError
+        from app.services.job_sites.hh.chats_sync import (
+            REJECTED_APPLICANT_STATES,
+            mark_hh_chat_read_for_user,
         )
-    except HHAuthError:
-        return {"ok": True, "hh_marked": False, "reason": "hh_session_expired"}
-    except Exception as exc:  # noqa: BLE001
-        logger.exception(
-            "mark_chat_read failed: user=%s chat=%s", user.id, chat.id
-        )
-        return {
-            "ok": True,
-            "hh_marked": False,
-            "reason": "hh_error",
-            "message": str(exc) or exc.__class__.__name__,
-        }
 
-    return {"ok": True, "hh_marked": True}
+        try:
+            await mark_hh_chat_read_for_user(
+                user_id=user.id,
+                hh_phone=hh_phone,
+                chat_external_id=chat.external_id,
+                message_id=str(message_id),
+                has_unread_discard=(
+                    chat.applicant_state in REJECTED_APPLICANT_STATES
+                ),
+            )
+        except HHAuthError:
+            return {
+                "ok": True, "hh_marked": False,
+                "remote_marked": False, "reason": "hh_session_expired",
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.exception(
+                "mark_chat_read failed: user=%s chat=%s", user.id, chat.id
+            )
+            return {
+                "ok": True, "hh_marked": False, "remote_marked": False,
+                "reason": "hh_error",
+                "message": str(exc) or exc.__class__.__name__,
+            }
+
+        return {"ok": True, "hh_marked": True, "remote_marked": True}
+
+    if chat.service == SERVICE_HABR:
+        habr_email = _habr_email_for(user)
+        from app.services.job_sites.habr import HabrAuthError
+        from app.services.job_sites.habr.chats_sync import (
+            mark_habr_chat_read_for_user,
+        )
+
+        try:
+            await mark_habr_chat_read_for_user(
+                user_id=user.id,
+                habr_email=habr_email or "",
+                chat_external_id=chat.external_id,
+            )
+        except HabrAuthError:
+            return {
+                "ok": True, "remote_marked": False,
+                "reason": "habr_session_expired",
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.exception(
+                "mark_chat_read failed: user=%s chat=%s", user.id, chat.id
+            )
+            return {
+                "ok": True, "remote_marked": False,
+                "reason": "habr_error",
+                "message": str(exc) or exc.__class__.__name__,
+            }
+
+        return {"ok": True, "remote_marked": True}
+
+    # Незнакомый сервис — локально уже прочитано, удалённо ничего не
+    # делаем (LinkedIn / etc ещё не имплементированы).
+    return {"ok": True, "remote_marked": False, "reason": "unsupported_service"}
 
 
 @router.post("/chats/{chat_uuid}/messages")
@@ -1158,92 +1290,206 @@ async def chats_send_message(
             },
         )
 
-    if chat.service != "hh":
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": "unsupported_service",
-                "message": "Отправка сообщений пока доступна только для hh.ru.",
-            },
+    if chat.service == SERVICE_HH:
+        hh_phone = _hh_phone_for(user, request)
+        if not hh_phone:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "no_hh_session",
+                    "message": (
+                        "Нет привязки к hh.ru. Войдите в аккаунт hh.ru через "
+                        "/settings."
+                    ),
+                },
+            )
+
+        from app.services.job_sites.hh import HHAuthError
+        from app.services.job_sites.hh.chats_sync import (
+            send_hh_chat_message_for_user,
         )
 
-    hh_phone = _hh_phone_for(user, request)
-    if not hh_phone:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": "no_hh_session",
-                "message": (
-                    "Нет привязки к hh.ru. Войдите в аккаунт hh.ru через "
-                    "/settings."
-                ),
-            },
+        try:
+            hh_response = await send_hh_chat_message_for_user(
+                user_id=user.id,
+                hh_phone=hh_phone,
+                chat_external_id=chat.external_id,
+                text=text,
+            )
+        except HHAuthError:
+            raise HTTPException(
+                status_code=401,
+                detail={
+                    "error": "hh_session_expired",
+                    "message": "Сессия hh.ru истекла. Войдите заново.",
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.exception(
+                "send_chat_message failed: user=%s chat=%s", user.id, chat.id
+            )
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    "error": "hh_send_failed",
+                    "message": str(exc) or exc.__class__.__name__,
+                },
+            )
+
+        # hh возвращает либо {"message": {...}} либо просто {...}. Достаём id.
+        hh_msg = (
+            hh_response.get("message") if isinstance(hh_response, dict) else None
         )
+        if not isinstance(hh_msg, dict):
+            hh_msg = hh_response if isinstance(hh_response, dict) else {}
+        remote_message_id = hh_msg.get("id")
 
-    from app.services.job_sites.hh import HHAuthError
-    from app.services.job_sites.hh.chats_sync import (
-        send_hh_chat_message_for_user,
-    )
+        from datetime import datetime, timezone
 
-    try:
-        hh_response = await send_hh_chat_message_for_user(
-            user_id=user.id,
-            hh_phone=hh_phone,
-            chat_external_id=chat.external_id,
+        now = datetime.now(timezone.utc)
+        new_msg = Message(
+            chat_id=chat.id,
+            external_id=(
+                str(remote_message_id) if remote_message_id is not None else None
+            ),
             text=text,
+            author="me",
+            author_name="Я",
+            is_read=True,
+            sent_at=now,
         )
-    except HHAuthError:
-        raise HTTPException(
-            status_code=401,
-            detail={
-                "error": "hh_session_expired",
-                "message": "Сессия hh.ru истекла. Войдите заново.",
+        db.add(new_msg)
+        chat.last_message_preview = text[:300]
+        chat.last_activity_at = now
+        chat.last_message_outgoing = True
+        await db.commit()
+        await db.refresh(new_msg)
+
+        return {
+            "ok": True,
+            "hh_message_id": remote_message_id,
+            "remote_message_id": remote_message_id,
+            "message": {
+                "id": str(new_msg.id),
+                "text": new_msg.text,
+                "sent_at": new_msg.sent_at.isoformat(),
+                "outgoing": True,
             },
+        }
+
+    if chat.service == SERVICE_HABR:
+        habr_email = _habr_email_for(user)
+        from app.services.job_sites.habr import HabrAuthError
+        from app.services.job_sites.habr.chats_sync import (
+            send_habr_chat_message_for_user,
+            sync_habr_chat_messages_for_user,
         )
-    except Exception as exc:  # noqa: BLE001
-        logger.exception(
-            "send_chat_message failed: user=%s chat=%s", user.id, chat.id
-        )
-        raise HTTPException(
-            status_code=502,
-            detail={
-                "error": "hh_send_failed",
-                "message": str(exc) or exc.__class__.__name__,
+
+        try:
+            habr_response, current_user_alias = await send_habr_chat_message_for_user(
+                user_id=user.id,
+                habr_email=habr_email or "",
+                chat_external_id=chat.external_id,
+                text=text,
+            )
+        except HabrAuthError:
+            raise HTTPException(
+                status_code=401,
+                detail={
+                    "error": "habr_session_expired",
+                    "message": "Сессия habr истекла. Войдите заново.",
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.exception(
+                "send_chat_message failed: user=%s chat=%s", user.id, chat.id
+            )
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    "error": "habr_send_failed",
+                    "message": str(exc) or exc.__class__.__name__,
+                },
+            )
+
+        # habr на POST /chat/messages возвращает само сообщение в плоском
+        # виде ({"id": ..., "body": "...", "createdAt": "...", ...}) — без
+        # обёртки ``message``. Достаём id для optimistic UI.
+        habr_msg = habr_response if isinstance(habr_response, dict) else {}
+        remote_message_id = habr_msg.get("id")
+
+        # Подтягиваем свежий хвост сообщений (включая только что
+        # отправленное) — упрощает синхронизацию с тем, что покажет
+        # habr-UI: парсер тогда увидит реальные id/createdAt без
+        # дублирования с локальной optimistic-вставкой.
+        try:
+            await sync_habr_chat_messages_for_user(
+                db, user_id=user.id, chat=chat, habr_email=habr_email or "",
+            )
+        except Exception:  # noqa: BLE001
+            # Логирование — внутри sync; здесь не валим отправку.
+            pass
+
+        from datetime import datetime, timezone
+
+        now = datetime.now(timezone.utc)
+        # Если sync_habr_chat_messages_for_user уже вставил это сообщение
+        # по external_id — повторно его не добавляем, чтобы не было
+        # дубля. В optimistic-ответе всё равно отдаём текст/время.
+        already_inserted = False
+        if remote_message_id is not None:
+            existing = (
+                await db.execute(
+                    select(Message).where(
+                        Message.chat_id == chat.id,
+                        Message.external_id == str(remote_message_id),
+                    )
+                )
+            ).scalar_one_or_none()
+            if existing is not None:
+                already_inserted = True
+                new_msg = existing
+
+        if not already_inserted:
+            new_msg = Message(
+                chat_id=chat.id,
+                external_id=(
+                    str(remote_message_id) if remote_message_id is not None else None
+                ),
+                text=text,
+                author="me",
+                author_name=(
+                    current_user_alias if current_user_alias else "Я"
+                ),
+                is_read=True,
+                sent_at=now,
+            )
+            db.add(new_msg)
+            chat.last_message_preview = text[:300]
+            chat.last_activity_at = now
+            chat.last_message_outgoing = True
+            await db.commit()
+            await db.refresh(new_msg)
+        else:
+            await db.commit()
+
+        return {
+            "ok": True,
+            "remote_message_id": remote_message_id,
+            "message": {
+                "id": str(new_msg.id),
+                "text": new_msg.text,
+                "sent_at": new_msg.sent_at.isoformat(),
+                "outgoing": True,
             },
-        )
+        }
 
-    # hh возвращает либо {"message": {...}} либо просто {...}. Достаём id.
-    hh_msg = hh_response.get("message") if isinstance(hh_response, dict) else None
-    if not isinstance(hh_msg, dict):
-        hh_msg = hh_response if isinstance(hh_response, dict) else {}
-    hh_message_id = hh_msg.get("id")
-
-    from datetime import datetime, timezone
-
-    now = datetime.now(timezone.utc)
-    new_msg = Message(
-        chat_id=chat.id,
-        external_id=(str(hh_message_id) if hh_message_id is not None else None),
-        text=text,
-        author="me",
-        author_name="Я",
-        is_read=True,
-        sent_at=now,
-    )
-    db.add(new_msg)
-    chat.last_message_preview = text[:300]
-    chat.last_activity_at = now
-    chat.last_message_outgoing = True
-    await db.commit()
-    await db.refresh(new_msg)
-
-    return {
-        "ok": True,
-        "hh_message_id": hh_message_id,
-        "message": {
-            "id": str(new_msg.id),
-            "text": new_msg.text,
-            "sent_at": new_msg.sent_at.isoformat(),
-            "outgoing": True,
+    raise HTTPException(
+        status_code=400,
+        detail={
+            "error": "unsupported_service",
+            "message": (
+                "Отправка сообщений для этой площадки пока не поддерживается."
+            ),
         },
-    }
+    )

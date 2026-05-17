@@ -292,6 +292,18 @@ class RateLimitedError(VacancyResponseError):
     """Career вернул 400 с сообщением о частоте откликов (≈ 1 раз в 10с)."""
 
 
+class HabrAuthError(RuntimeError):
+    """career.habr.com отказывается отвечать от имени юзера.
+
+    Поднимается во всех путях, где наш HabrClient видит, что
+    cookies/SSO протухли (редирект ``/users/auth/*``, 401 от
+    ``frontend_v1``-API, отсутствие маркера «авторизованный юзер»
+    в HTML). Хэндлеры API роутов ловят это и отдают наверх
+    HTTP-401 ``habr_session_expired`` — фронт ведёт юзера на
+    ``/settings`` для переподключения habr-аккаунта.
+    """
+
+
 def _is_rate_limited(body: str) -> bool:
     return "чаще, чем раз" in body or "раз в 10 секунд" in body
 
@@ -827,6 +839,217 @@ class HabrClient(BaseJobSiteClient):
             "Referer": referer,
             "Origin": BASE,
         }
+
+    # ── чаты (career.habr.com /conversations + frontend_v1) ───────────
+    #
+    # Habr держит чаты в Vue.js SPA. Список диалогов отдаётся в HTML
+    # ``/conversations`` через Nuxt SSR payload (``__NUXT_DATA__``,
+    # формат devalue), а внутренние операции — JSON-API ``frontend_v1``:
+    #
+    #   GET  /api/frontend_v1/chat/messages?login=…&page=…
+    #   POST /api/frontend_v1/chat/conversations/{login}/toggle_read_state
+    #   POST /api/frontend_v1/chat/messages
+    #
+    # GET-запросы достаточно дёрнуть с cookies (header ``x-csrf-token``
+    # хабр шлёт пустым, но без него сервер тоже отвечает). POST'ы
+    # требуют свежий одноразовый токен из
+    # ``GET /api/frontend_v1/users/authenticity_token`` —
+    # достаём непосредственно перед каждым write-запросом.
+    #
+    # Парсер ``__NUXT_DATA__`` и логика записи в БД живут в
+    # :mod:`app.services.job_sites.habr.chats_sync`, чтобы не плодить
+    # SQL-импорты в этот файл. Здесь — только тонкие HTTP-обёртки.
+
+    async def _frontend_get_json(
+        self, path: str, *, referer: str | None = None,
+    ) -> dict[str, Any]:
+        """GET ``/api/frontend_v1/...`` и распарсить JSON.
+
+        ``path`` — относительный путь начиная с ``/api/...``. На
+        входной точке кладём cookies + минимум заголовков, как в HAR.
+        Любой редирект на ``/users/auth/*`` или ``401/403`` поднимаем
+        как :class:`HabrAuthError`.
+        """
+        url = f"{BASE}{path}"
+        headers = {
+            "Accept": "*/*",
+            "Referer": referer or f"{BASE}/conversations",
+            "x-csrf-token": "",
+        }
+        async with self.session.get(url, headers=headers) as r:
+            final = str(r.url)
+            if "/users/auth/" in final:
+                raise HabrAuthError(
+                    f"habr вернул редирект на логин ({final}) для {path}"
+                )
+            if r.status in (401, 403):
+                raise HabrAuthError(
+                    f"habr вернул {r.status} на {path}"
+                )
+            r.raise_for_status()
+            data = await r.json(content_type=None)
+        if not isinstance(data, dict):
+            raise RuntimeError(f"habr {path} вернул не dict: {type(data).__name__}")
+        return data
+
+    async def _frontend_post_json(
+        self,
+        path: str,
+        *,
+        body: dict[str, Any],
+        referer: str,
+        authenticity_token: str,
+    ) -> dict[str, Any]:
+        """POST ``/api/frontend_v1/...`` с одноразовым ``x-csrf-token``.
+
+        Тело отправляется как ``application/json``. Возвращает
+        распарсенный JSON; ``HabrAuthError`` — на тех же признаках
+        протухшей сессии, что и :meth:`_frontend_get_json`.
+        """
+        url = f"{BASE}{path}"
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Origin": BASE,
+            "Referer": referer,
+            "x-csrf-token": authenticity_token,
+        }
+        async with self.session.post(url, json=body, headers=headers) as r:
+            final = str(r.url)
+            if "/users/auth/" in final:
+                raise HabrAuthError(
+                    f"habr вернул редирект на логин ({final}) для {path}"
+                )
+            if r.status in (401, 403):
+                raise HabrAuthError(
+                    f"habr вернул {r.status} на {path}"
+                )
+            r.raise_for_status()
+            data = await r.json(content_type=None)
+        if not isinstance(data, dict):
+            raise RuntimeError(f"habr {path} вернул не dict: {type(data).__name__}")
+        return data
+
+    async def fetch_users_me(self) -> dict[str, Any]:
+        """``/api/frontend_v1/users/me`` — профиль текущего юзера.
+
+        Используется чатами, чтобы определить ``alias`` залогиненного
+        (он же ``authorLogin`` в исходящих сообщениях): по нему
+        отличаем ``AUTHOR_ME`` от ``AUTHOR_THEM``.
+        """
+        return await self._frontend_get_json("/api/frontend_v1/users/me")
+
+    async def fetch_authenticity_token(self) -> str:
+        """Получить одноразовый ``x-csrf-token`` для POST-эндпойнтов.
+
+        В HAR хабр перед каждым POST дёргает этот эндпойнт и берёт
+        свежий токен (старый «сжигается» после первого использования).
+        Поэтому функция намеренно не кэширует — вызывающий должен
+        дёргать её непосредственно перед каждым POST.
+        """
+        data = await self._frontend_get_json(
+            "/api/frontend_v1/users/authenticity_token"
+        )
+        token = data.get("token")
+        if not isinstance(token, str) or not token:
+            raise HabrAuthError(
+                f"habr вернул пустой authenticity token: {data}"
+            )
+        return token
+
+    async def fetch_conversations_html(self, page: int = 1) -> str:
+        """GET ``/conversations[?page=N]`` — HTML со списком диалогов.
+
+        Парсинг ``__NUXT_DATA__`` живёт в
+        :mod:`app.services.job_sites.habr.chats_sync` (там же — тип
+        возвращаемых ``conversations[]`` и ``meta``). Здесь — чисто
+        транспорт + детект редиректа на логин.
+        """
+        url = f"{BASE}/conversations"
+        params = {"page": page} if page and page > 1 else None
+        async with self.session.get(url, params=params) as r:
+            final = str(r.url)
+            if "/users/auth/" in final:
+                raise HabrAuthError(
+                    f"habr вернул редирект на логин ({final}) для /conversations"
+                )
+            r.raise_for_status()
+            return await r.text()
+
+    async def fetch_chat_messages_page(
+        self, login: str, page: int = 1,
+    ) -> dict[str, Any]:
+        """GET ``/api/frontend_v1/chat/messages?login=&page=`` — история чата.
+
+        Ответ:
+        ``{"messages": [...], "meta": {"totalResults", "currentPage",
+                                       "totalPages", "perPage"}}``.
+        Пагинация: ``perPage=20``, ``currentPage`` идёт от 1.
+        """
+        if not login:
+            raise ValueError("fetch_chat_messages_page: пустой login")
+        path = (
+            f"/api/frontend_v1/chat/messages?login={login}&page={page}"
+        )
+        return await self._frontend_get_json(
+            path, referer=f"{BASE}/conversations/{login}",
+        )
+
+    async def toggle_chat_read_state(
+        self, login: str, *, new_state: str = "read",
+        authenticity_token: str | None = None,
+    ) -> dict[str, Any]:
+        """POST ``/chat/conversations/{login}/toggle_read_state``.
+
+        Body: ``{"new_state": "read" | "unread"}``. Возвращает
+        ``{"hasBeenRead": bool}``. Если токен не передан — дёрнем
+        свежий сами (см. :meth:`fetch_authenticity_token`).
+        """
+        if not login:
+            raise ValueError("toggle_chat_read_state: пустой login")
+        if new_state not in ("read", "unread"):
+            raise ValueError(f"new_state={new_state!r}, ожидался 'read'/'unread'")
+        token = authenticity_token or await self.fetch_authenticity_token()
+        path = (
+            f"/api/frontend_v1/chat/conversations/{login}/toggle_read_state"
+        )
+        return await self._frontend_post_json(
+            path,
+            body={"new_state": new_state},
+            referer=f"{BASE}/conversations/{login}",
+            authenticity_token=token,
+        )
+
+    async def send_chat_message(
+        self,
+        login: str,
+        body: str,
+        *,
+        authenticity_token: str | None = None,
+        chat_attachment_uuids: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """POST ``/api/frontend_v1/chat/messages`` — отправить сообщение.
+
+        Body: ``{"login": login, "body": text, "chatAttachmentUuids": [...]}``.
+        Ответ: ``{"messages": [...], "meta": {...}}`` — habr отдаёт
+        полную историю после вставки (удобно — сразу же синкаем БД).
+        """
+        if not login:
+            raise ValueError("send_chat_message: пустой login")
+        if not body or not body.strip():
+            raise ValueError("send_chat_message: пустой body")
+        token = authenticity_token or await self.fetch_authenticity_token()
+        payload = {
+            "login": login,
+            "body": body,
+            "chatAttachmentUuids": list(chat_attachment_uuids or []),
+        }
+        return await self._frontend_post_json(
+            "/api/frontend_v1/chat/messages",
+            body=payload,
+            referer=f"{BASE}/conversations/{login}",
+            authenticity_token=token,
+        )
 
     # ── онбординг: подтягивание резюме + категории ────────────────────
 
