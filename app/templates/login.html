@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="ru"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — Offerday</title>
+    
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    <link rel="stylesheet" href="/static/icons/phosphor-bold.css">
+    <style>
+        :root {
+            --bg-start: #f0fdf4;
+            --bg-mid: #dcfce7;
+            --bg-end: #bbf7d0;
+            --accent: #16a34a;
+            --fg: #09090b;
+            --muted: #71717a;
+            --border: #e4e4e7;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .glass-card {
+            background: white;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--fg);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .hh-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e11d48;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .step-hidden {
+            display: none;
+        }
+
+        .security-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .security-icon {
+            color: var(--accent);
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+  <style type="text/css">
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}/*
+! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
+*//*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+.relative {
+  position: relative;
+}
+.sticky {
+  position: sticky;
+}
+.top-0 {
+  top: 0px;
+}
+.z-50 {
+  z-index: 50;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.ml-1 {
+  margin-left: 0.25rem;
+}
+.mt-10 {
+  margin-top: 2.5rem;
+}
+.mt-8 {
+  margin-top: 2rem;
+}
+.block {
+  display: block;
+}
+.flex {
+  display: flex;
+}
+.inline-flex {
+  display: inline-flex;
+}
+.grid {
+  display: grid;
+}
+.h-14 {
+  height: 3.5rem;
+}
+.h-16 {
+  height: 4rem;
+}
+.h-2 {
+  height: 0.5rem;
+}
+.w-2 {
+  width: 0.5rem;
+}
+.w-full {
+  width: 100%;
+}
+.max-w-7xl {
+  max-width: 80rem;
+}
+.max-w-\[340px\] {
+  max-width: 340px;
+}
+.max-w-\[480px\] {
+  max-width: 480px;
+}
+.flex-grow {
+  flex-grow: 1;
+}
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-1 {
+  gap: 0.25rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+.border {
+  border-width: 1px;
+}
+.border-b {
+  border-bottom-width: 1px;
+}
+.border-t {
+  border-top-width: 1px;
+}
+.border-\[\#e4e4e7\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(228 228 231 / var(--tw-border-opacity, 1));
+}
+.bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+.bg-white\/80 {
+  background-color: rgb(255 255 255 / 0.8);
+}
+.p-0 {
+  padding: 0px;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.p-8 {
+  padding: 2rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.pt-8 {
+  padding-top: 2rem;
+}
+.text-center {
+  text-align: center;
+}
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-\[10px\] {
+  font-size: 10px;
+}
+.text-\[11px\] {
+  font-size: 11px;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-extrabold {
+  font-weight: 800;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.leading-relaxed {
+  line-height: 1.625;
+}
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+.text-\[\#e11d48\] {
+  --tw-text-opacity: 1;
+  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+}
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+.text-gray-400 {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
+}
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity, 1));
+}
+.text-green-600 {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+.underline {
+  text-decoration-line: underline;
+}
+.outline {
+  outline-style: solid;
+}
+.backdrop-blur-md {
+  --tw-backdrop-blur: blur(12px);
+  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+.hover\:text-black:hover {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+.hover\:text-gray-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
+}
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+@media (min-width: 768px) {
+
+  .md\:p-10 {
+    padding: 2.5rem;
+  }
+
+  .md\:px-10 {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}* {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  </style></head>
+<body>
+
+    
+    <nav class="w-full h-16 flex items-center justify-center border-b border-[#e4e4e7] bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="w-full max-w-7xl px-6 md:px-10 flex justify-between items-center">
+            <div class="flex items-center gap-2 text-xl font-extrabold tracking-tighter cursor-pointer" onclick="window.location.reload()">
+                <div class="logo-dot"></div> OFFERDAY
+            </div>
+            <a href="/" class="text-sm font-semibold text-muted hover:text-black transition-colors">Вернуться на главную</a>
+        </div>
+    </nav>
+
+    
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="w-full max-w-[480px] glass-card p-8 md:p-10 fade-in">
+            
+            
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-1 mb-4">
+                    <span class="text-lg font-bold">Войдите через</span>
+                    <span class="font-extrabold text-[#e11d48]">hh.ru</span>
+                </div>
+                <p class="text-sm text-muted-foreground text-gray-500 leading-relaxed max-w-[340px] mx-auto">
+                    Это позволит вам отправлять отклики с вашего аккаунта и получать больше приглашений от работодателей
+                </p>
+            </div>
+
+            
+            <div id="formSteps">
+                
+                
+                <div id="stepPhone" class="space-y-6">
+                    <div class="relative">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 ml-1">Номер телефона</label>
+                        <div class="flex gap-2">
+                            <div class="flex items-center gap-2 px-4 py-3 border border-border rounded-xl bg-gray-50 text-sm font-medium">
+                                <span class="text-lg">🇷🇺</span> +7
+                            </div>
+                            <input type="tel" inputmode="numeric" placeholder="900 000-00-00" class="input-field" id="phoneInput" autocomplete="tel-national">
+                        </div>
+                    </div>
+
+                    <div id="phoneError" class="text-sm text-red-600" style="display:none;"></div>
+
+                    <button class="btn-primary" id="requestCodeBtn" type="button">
+                        Получить код
+                    </button>
+                    <div id="requestCodeHint" class="text-center text-xs text-gray-400" style="display:none;">
+                        Решаем капчу hh.ru — это может занять до 3–5 минут. Не закрывайте страницу.
+                    </div>
+                </div>
+
+                
+                <div id="stepSms" class="step-hidden space-y-6">
+                    <div class="text-center mb-4">
+                        <div class="text-sm text-gray-500 mb-2">Код отправлен на номер <span class="font-semibold text-black" id="displayPhone">+7 (900) 000-00-00</span></div>
+                        <button class="text-xs font-semibold text-green-600 hover:underline" type="button" id="backToPhoneBtn">Изменить номер</button>
+                    </div>
+
+                    <div class="flex justify-between gap-2" id="codeInputs">
+                        <!-- inputs are rendered dynamically based on code_length from /auth/request-code -->
+                    </div>
+
+                    <div id="smsHint" class="text-center text-xs text-gray-400">
+                        Введите код из SMS
+                    </div>
+                    <div id="smsError" class="text-center text-sm text-red-600" style="display:none;"></div>
+
+                    <button class="btn-primary" id="verifyCodeBtn" type="button" disabled="" style="opacity: 0.5; cursor: not-allowed;">
+                        Подтвердить
+                    </button>
+                </div>
+
+            </div>
+
+            
+            <div class="mt-10 pt-8 border-t border-border">
+                <h3 class="text-sm font-bold mb-6 flex items-center gap-2">
+                    <i class="ph-bold ph-shield-check text-green-600 text-lg"></i>
+                    Ваши данные в безопасности
+                </h3>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="security-item">
+                        <i class="ph-bold ph-lock-key security-icon"></i>
+                        <span>Не храним пароли и данные от аккаунта</span>
+                    </div>
+                    <div class="security-item">
+                        <i class="ph-bold ph-user-focus security-icon"></i>
+                        <span>Выполняем действия от вашего имени в рамках правил</span>
+                    </div>
+                    <div class="security-item">
+                        <i class="ph-bold ph-users security-icon"></i>
+                        <span>Не передаём данные третьим лицам</span>
+                    </div>
+                    <div class="security-item">
+                        <i class="ph-bold ph-fingerprint security-icon"></i>
+                        <span>Отклики никак неотличимы от ручных</span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="mt-8 text-[11px] leading-relaxed text-gray-400 text-center px-2">
+                Мы не храним пароль или код. Они используются только для входа в hh.ru. Продолжая, вы принимаете <a href="#" class="underline hover:text-gray-600">политику конфиденциальности</a> и даёте <a href="#" class="underline hover:text-gray-600">согласие на обработку персональных данных</a>.
+            </div>
+        </div>
+    </main>
+
+    
+    <footer class="py-10 text-center">
+        <div class="flex items-center justify-center gap-2 text-sm font-bold tracking-tight mb-2">
+            <div class="logo-dot w-2 h-2"></div> OFFERDAY
+        </div>
+        <p class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">
+            © 2024 OFFERDAY SYSTEMS. ВСЕ ЛОГИ УДАЛЯЮТСЯ ПОСЛЕ ТРУДОУСТРОЙСТВА.
+        </p>
+    </footer>
+
+    <script>
+        const stepPhone = document.getElementById('stepPhone');
+        const stepSms = document.getElementById('stepSms');
+        const phoneInput = document.getElementById('phoneInput');
+        const phoneError = document.getElementById('phoneError');
+        const requestCodeBtn = document.getElementById('requestCodeBtn');
+        const requestCodeHint = document.getElementById('requestCodeHint');
+        const displayPhone = document.getElementById('displayPhone');
+        const codeInputsContainer = document.getElementById('codeInputs');
+        let smsInputs = [];
+        const smsHint = document.getElementById('smsHint');
+        const smsError = document.getElementById('smsError');
+        const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+        const backToPhoneBtn = document.getElementById('backToPhoneBtn');
+
+        const ERROR_MESSAGES = {
+            invalid_phone: 'Неверный формат номера. Пример: 900 000-00-00.',
+            twocaptcha_key_not_configured: 'Сервер не настроен: не задан TWOCAPTCHA_KEY.',
+            captcha_failed: 'Не удалось пройти капчу hh.ru. Попробуйте ещё раз.',
+            hh_blocked: 'hh.ru временно блокирует автозапросы. Подождите пару минут и попробуйте снова.',
+            invalid_code: 'Неверный код из SMS.',
+            code_expired: 'Код истёк. Запросите новый.',
+            no_pending_request: 'Сессия истекла. Запросите код заново.',
+        };
+
+        function setBtnLoading(btn, loading, normalText) {
+            if (loading) {
+                btn.dataset.normalText = btn.dataset.normalText || btn.innerText;
+                btn.innerText = 'Подождите…';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.innerText = normalText || btn.dataset.normalText || btn.innerText;
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+            }
+        }
+
+        function showError(el, key) {
+            el.innerText = ERROR_MESSAGES[key] || ('Ошибка: ' + key);
+            el.style.display = 'block';
+        }
+
+        function hideError(el) {
+            el.style.display = 'none';
+            el.innerText = '';
+        }
+
+        function goToSmsStep() {
+            stepPhone.classList.add('step-hidden');
+            stepSms.classList.remove('step-hidden');
+            stepSms.classList.add('fade-in');
+            setTimeout(() => smsInputs[0] && smsInputs[0].focus(), 100);
+        }
+
+        function goToPhoneStep() {
+            stepSms.classList.add('step-hidden');
+            stepPhone.classList.remove('step-hidden');
+            stepPhone.classList.add('fade-in');
+            smsInputs.forEach(i => i.value = '');
+            updateVerifyBtn();
+            hideError(smsError);
+        }
+
+        function collectCode() {
+            return smsInputs.map(i => i.value).join('');
+        }
+
+        function updateVerifyBtn() {
+            const filled = collectCode().length === smsInputs.length;
+            verifyCodeBtn.disabled = !filled;
+            verifyCodeBtn.style.opacity = filled ? '' : '0.5';
+            verifyCodeBtn.style.cursor = filled ? '' : 'not-allowed';
+        }
+
+        async function postJSON(url, body) {
+            const r = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body || {}),
+                credentials: 'same-origin',
+            });
+            let data = null;
+            try { data = await r.json(); } catch (e) { /* ignore */ }
+            return { ok: r.ok, status: r.status, data };
+        }
+
+        // ── step 1: request SMS code ─────────────────────────────────────
+        requestCodeBtn.addEventListener('click', async () => {
+            hideError(phoneError);
+            const raw = phoneInput.value.trim();
+            if (!raw) {
+                showError(phoneError, 'invalid_phone');
+                return;
+            }
+            const phone = '+7' + raw.replace(/\D/g, '');
+            displayPhone.innerText = phone;
+
+            setBtnLoading(requestCodeBtn, true);
+            requestCodeHint.style.display = 'block';
+            const { ok, data } = await postJSON('/auth/request-code', { phone });
+            requestCodeHint.style.display = 'none';
+            setBtnLoading(requestCodeBtn, false, 'Получить код');
+
+            if (!ok) {
+                showError(phoneError, (data && data.detail) || 'request_failed');
+                return;
+            }
+            if (data && data.formatted_phone) displayPhone.innerText = data.formatted_phone;
+            renderCodeInputs((data && data.code_length) || 4);
+            goToSmsStep();
+        });
+
+        backToPhoneBtn.addEventListener('click', goToPhoneStep);
+
+        // hh.ru can return 4-, 5- or 6-digit codes (we get the actual length
+        // from /auth/request-code's `code_length`). Render the right number
+        // of inputs and bind handlers when we hit the SMS step.
+        function renderCodeInputs(n) {
+            const length = Math.max(1, Math.min(10, parseInt(n, 10) || 4));
+            codeInputsContainer.innerHTML = '';
+            smsInputs = [];
+            for (let i = 0; i < length; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.inputMode = 'numeric';
+                input.maxLength = 1;
+                input.className = 'input-field text-center text-2xl font-bold p-0 h-14';
+                if (i === 0) input.setAttribute('autofocus', '');
+                codeInputsContainer.appendChild(input);
+                smsInputs.push(input);
+            }
+            bindCodeInputs();
+            updateVerifyBtn();
+        }
+
+        function bindCodeInputs() {
+            smsInputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    input.value = input.value.replace(/\D/g, '').slice(0, 1);
+                    if (input.value && index < smsInputs.length - 1) smsInputs[index + 1].focus();
+                    updateVerifyBtn();
+                    hideError(smsError);
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) smsInputs[index - 1].focus();
+                    if (e.key === 'Enter' && !verifyCodeBtn.disabled) verifyCodeBtn.click();
+                });
+                input.addEventListener('paste', (e) => {
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = (text || '').replace(/\D/g, '').slice(0, smsInputs.length);
+                    if (!digits) return;
+                    e.preventDefault();
+                    digits.split('').forEach((d, i) => { if (smsInputs[i]) smsInputs[i].value = d; });
+                    const next = smsInputs[Math.min(digits.length, smsInputs.length - 1)];
+                    if (next) next.focus();
+                    updateVerifyBtn();
+                });
+            });
+        }
+
+        // ── step 2: verify code ──────────────────────────────────────────
+        verifyCodeBtn.addEventListener('click', async () => {
+            hideError(smsError);
+            const code = collectCode();
+            setBtnLoading(verifyCodeBtn, true);
+            const { ok, data } = await postJSON('/auth/verify-code', { code });
+            if (!ok) {
+                setBtnLoading(verifyCodeBtn, false, 'Подтвердить');
+                showError(smsError, (data && data.detail) || 'verify_failed');
+                return;
+            }
+            window.location.href = '/dashboard';
+        });
+    </script>
+
+</body></html>

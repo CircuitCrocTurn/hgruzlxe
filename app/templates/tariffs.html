@@ -1,0 +1,1530 @@
+<!doctype html>
+<html lang="ru"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offerday — Тарифы</title>
+    
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    <link rel="stylesheet" href="/static/icons/phosphor-bold.css">
+    <link rel="stylesheet" href="/static/icons/phosphor-fill.css">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            --accent: #16a34a;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #09090b;
+            margin: 0;
+        }
+
+        .mono { font-family: var(--font-mono); }
+
+        .sidebar-item.active {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--accent);
+            border-right: 3px solid var(--accent);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e4e4e7;
+            border-radius: 10px;
+        }
+
+        .duration-btn.active {
+            background: white;
+            color: var(--accent);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .duration-discount-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #16a34a;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            line-height: 1.4;
+            white-space: nowrap;
+            box-shadow: 0 1px 4px rgba(22, 163, 74, 0.35);
+            font-family: var(--font-mono);
+        }
+
+        /* Landing-style price cards (mirror /landing.html `.price-card`). */
+        .price-card {
+            border: 1px solid #e4e4e7;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 40px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .price-card:hover { transform: translateY(-4px); }
+
+        .price-card.featured {
+            border: 2px solid #16a34a;
+            position: relative;
+        }
+        .price-card.current {
+            outline: 2px solid rgba(22, 163, 74, 0.4);
+            outline-offset: 2px;
+        }
+
+        .featured-tag {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #16a34a;
+            color: #ffffff;
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0;
+            white-space: nowrap;
+        }
+
+        .price-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #71717a;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .price-name.accent { color: #16a34a; }
+
+        .price-val {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin: 20px 0 6px 0;
+            color: #18181b;
+            line-height: 1;
+        }
+        .price-val .currency {
+            font-size: 26px;
+            font-weight: 700;
+            color: #a1a1aa;
+            margin-left: 4px;
+        }
+
+        .price-daily {
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 600;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .price-daily .old {
+            text-decoration: line-through;
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+        .price-daily.muted {
+            color: #71717a;
+            font-weight: 400;
+            font-style: italic;
+        }
+        .price-daily .saving-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+
+        .price-features {
+            list-style: none;
+            flex-grow: 1;
+            margin: 0 0 32px 0;
+            padding: 0;
+        }
+        .price-features li {
+            font-size: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f4f4f5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #3f3f46;
+        }
+        .price-features li::before {
+            content: "→";
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .price-features li.off {
+            color: #a1a1aa;
+        }
+        .price-features li.off::before {
+            content: "×";
+            color: #d4d4d8;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 14px 0;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1.5px solid #e4e4e7;
+            background: #ffffff;
+            color: #3f3f46;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-plan:hover { background: #fafafa; }
+        .btn-plan.accent {
+            background: #16a34a;
+            color: #ffffff;
+            border-color: #16a34a;
+            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.25);
+        }
+        .btn-plan.accent:hover { background: #15803d; }
+        .btn-plan.outlined-accent {
+            color: #16a34a;
+            border: 2px solid #16a34a;
+        }
+        .btn-plan.outlined-accent:hover { background: rgba(22, 163, 74, 0.06); }
+        .btn-plan:disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+    </style>
+
+  <style type="text/css">
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}/*
+! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
+*//*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+.fixed {
+  position: fixed;
+}
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+.-top-4 {
+  top: -1rem;
+}
+.left-1\/2 {
+  left: 50%;
+}
+.z-50 {
+  z-index: 50;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-10 {
+  margin-bottom: 2.5rem;
+}
+.mb-12 {
+  margin-bottom: 3rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.mt-0\.5 {
+  margin-top: 0.125rem;
+}
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-20 {
+  margin-top: 5rem;
+}
+.flex {
+  display: flex;
+}
+.table {
+  display: table;
+}
+.grid {
+  display: grid;
+}
+.h-10 {
+  height: 2.5rem;
+}
+.h-4 {
+  height: 1rem;
+}
+.h-screen {
+  height: 100vh;
+}
+.w-10 {
+  width: 2.5rem;
+}
+.w-4 {
+  width: 1rem;
+}
+.w-64 {
+  width: 16rem;
+}
+.w-full {
+  width: 100%;
+}
+.min-w-0 {
+  min-width: 0px;
+}
+.flex-1 {
+  flex: 1 1 0%;
+}
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+.border-collapse {
+  border-collapse: collapse;
+}
+.-translate-x-1\/2 {
+  --tw-translate-x: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-default {
+  cursor: default;
+}
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-start {
+  align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
+}
+.items-center {
+  align-items: center;
+}
+.items-baseline {
+  align-items: baseline;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-1 {
+  gap: 0.25rem;
+}
+.gap-12 {
+  gap: 3rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.gap-3 {
+  gap: 0.75rem;
+}
+.gap-8 {
+  gap: 2rem;
+}
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rounded-2xl {
+  border-radius: 1rem;
+}
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+.rounded-\[2px\] {
+  border-radius: 2px;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+.border {
+  border-width: 1px;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-b {
+  border-bottom-width: 1px;
+}
+.border-r {
+  border-right-width: 1px;
+}
+.border-t {
+  border-top-width: 1px;
+}
+.border-\[\#16a34a\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(22 163 74 / var(--tw-border-opacity, 1));
+}
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+.border-zinc-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
+}
+.border-zinc-100\/50 {
+  border-color: rgb(244 244 245 / 0.5);
+}
+.border-zinc-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(228 228 231 / var(--tw-border-opacity, 1));
+}
+.bg-\[\#16a34a\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
+}
+.bg-emerald-50\/20 {
+  background-color: rgb(236 253 245 / 0.2);
+}
+.bg-emerald-50\/30 {
+  background-color: rgb(236 253 245 / 0.3);
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50\/50 {
+  background-color: rgb(250 250 250 / 0.5);
+}
+.bg-zinc-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+}
+.hidden {
+  display: none;
+}
+.bg-emerald-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 253 245 / var(--tw-bg-opacity, 1));
+}
+.border-emerald-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 250 229 / var(--tw-border-opacity, 1));
+}
+.p-1 {
+  padding: 0.25rem;
+}
+.p-10 {
+  padding: 2.5rem;
+}
+.p-4 {
+  padding: 1rem;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.p-8 {
+  padding: 2rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.px-8 {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+.text-\[10px\] {
+  font-size: 10px;
+}
+.text-\[11px\] {
+  font-size: 11px;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-black {
+  font-weight: 900;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-extrabold {
+  font-weight: 800;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.italic {
+  font-style: italic;
+}
+.leading-relaxed {
+  line-height: 1.625;
+}
+.leading-tight {
+  line-height: 1.25;
+}
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+.text-\[\#16a34a\] {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+.text-yellow-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 224 71 / var(--tw-text-opacity, 1));
+}
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity, 1));
+}
+.text-zinc-400 {
+  --tw-text-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-text-opacity, 1));
+}
+.text-zinc-500 {
+  --tw-text-opacity: 1;
+  color: rgb(113 113 122 / var(--tw-text-opacity, 1));
+}
+.text-zinc-600 {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.text-zinc-800 {
+  --tw-text-opacity: 1;
+  color: rgb(39 39 42 / var(--tw-text-opacity, 1));
+}
+.text-zinc-900 {
+  --tw-text-opacity: 1;
+  color: rgb(24 24 27 / var(--tw-text-opacity, 1));
+}
+.opacity-40 {
+  opacity: 0.4;
+}
+.opacity-80 {
+  opacity: 0.8;
+}
+.opacity-90 {
+  opacity: 0.9;
+}
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-sm {
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-xl {
+  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-emerald-200 {
+  --tw-shadow-color: #a7f3d0;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+.shadow-emerald-900\/5 {
+  --tw-shadow-color: rgb(6 78 59 / 0.05);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.hover\:bg-\[\#15803d\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-emerald-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 253 245 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-white:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.hover\:text-zinc-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.hover\:text-zinc-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(63 63 70 / var(--tw-text-opacity, 1));
+}* {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  
+/* Quota widget — pixel-identical on /dashboard, /responses, /chats,
+   /settings, /tariffs.  Styled directly so it doesn't depend on which
+   Tailwind utilities each page happens to ship.  ---------------------*/
+.quota-widget { background: #fafafa; border-radius: 12px; padding: 16px; }
+.quota-widget + .profile-card { margin-top: 12px; }
+.qw-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+.qw-numbers {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+.qw-num { font-size: 24px; font-weight: 900; color: #18181b; }
+.qw-sep { font-size: 22px; font-weight: 700; color: #d4d4d8; padding: 0 2px; }
+.qw-den { font-size: 24px; font-weight: 700; color: #a1a1aa; }
+.qw-bar-track {
+    height: 6px;
+    width: 100%;
+    background: #e4e4e7;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.qw-bar-fill {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 9999px;
+    transition: width 0.2s ease;
+}
+.qw-status { font-size: 11px; color: #71717a; line-height: 1.3; }
+</style></head>
+<body class="flex overflow-hidden w-full h-screen">
+<aside class="w-64 h-screen bg-white border-r border-zinc-200 flex flex-col z-50 shrink-0">
+<div class="px-6 py-6 flex items-center gap-2" style="height:64px;">
+<div class="bg-[#16a34a] rounded-sm shrink-0" style="width:8px;height:8px;"></div>
+<span class="font-extrabold" style="font-size:16px;line-height:24px;letter-spacing:-0.025em;">OFFERDAY</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/dashboard"><i class="ph-bold ph-chart-bar text-lg"></i> Статистика</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/responses"><i class="ph-bold ph-paper-plane-tilt text-lg"></i> Отклики</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/chats"><i class="ph-bold ph-chats-circle text-lg"></i> Чаты</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/settings"><i class="ph-bold ph-gear-six text-lg"></i> Настройки</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-zinc-900 text-white" href="/tariffs"><i class="ph-bold ph-credit-card text-lg"></i> Тарифы</a>
+</nav>
+<div class="p-4 space-y-3 border-t border-zinc-100">
+<div class="quota-widget" data-quota-widget>
+<div class="qw-label">Отклики сегодня</div>
+<div class="qw-numbers">
+<span class="qw-num">{{ responses_used_today|default(0) }}</span>
+<span class="qw-sep">/</span>
+<span class="qw-den">{{ responses_daily_limit_label|default('∞') }}</span>
+</div>
+{% if responses_daily_limit and responses_daily_limit > 0 %}
+{% set quota_pct = ((responses_used_today | default(0)) * 100 / responses_daily_limit) | round(0, 'floor') | int %}
+{% if quota_pct > 100 %}{% set quota_pct = 100 %}{% endif %}
+<div class="qw-bar-track">
+<div class="qw-bar-fill" style="width: {{ quota_pct }}%;"></div>
+</div>
+{% endif %}
+<div class="qw-status">{{ responses_quota_status|default('Лимит обновляется в 00:00.') }}</div>
+</div>
+<a class="profile-card flex items-center gap-3 px-2 py-2 -mx-2 rounded-lg hover:bg-zinc-100 transition-colors group" href="/settings" title="Открыть настройки">
+<div class="rounded-full bg-zinc-900 text-white font-extrabold flex items-center justify-center shrink-0" style="width:36px;height:36px;font-size:12px;line-height:1;">{{ (user.first_name or '?')[0] }}{{ (user.last_name or '')[:1] }}</div>
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold truncate text-zinc-900">{{ user.first_name|default('') }} {{ (user.last_name or '')[:1] }}{{ '.' if user.last_name else '' }}</div>
+<div class="text-[10px] text-zinc-400 truncate">{{ user.title|default('Кандидат') }}</div>
+</div>
+<i class="ph-bold ph-caret-right text-zinc-300 group-hover:text-zinc-500 transition-colors text-base"></i>
+</a>
+</div>
+</aside>
+
+<main class="flex-1 flex flex-col p-8 overflow-y-auto custom-scrollbar">
+<header class="flex justify-between items-end mb-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Тарифы</h1>
+<p class="text-zinc-500 mt-1">Выберите подходящий план для автоматизации поиска работы.</p>
+</div>
+</header>
+
+<div id="planFlash" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-semibold"></div>
+
+<div class="bg-white border border-zinc-200 rounded-3xl shadow-sm">
+<div class="p-10">
+<div class="flex justify-center mb-12">
+<div class="bg-zinc-100 p-1 rounded-xl flex gap-1 relative duration-toggle">
+<button type="button" class="duration-btn px-8 py-2.5 rounded-lg text-sm font-bold text-zinc-500 transition-all hover:text-zinc-700" data-duration="3">3 дня</button>
+<button type="button" class="duration-btn active px-8 py-2.5 rounded-lg text-sm font-bold transition-all relative" data-duration="7">
+<span class="duration-discount-badge">−15%</span>
+7 дней
+</button>
+<button type="button" class="duration-btn px-8 py-2.5 rounded-lg text-sm font-bold text-zinc-500 transition-all hover:text-zinc-700 relative" data-duration="14">
+<span class="duration-discount-badge">−30%</span>
+14 дней
+</button>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8">
+{# FREE #}
+<div class="price-card {% if current_plan_slug == 'free' %}current{% endif %}" data-plan-card="free">
+<div class="price-name">FREE</div>
+<div class="price-val"><span data-plan-price="free">0</span><span class="currency">₽</span></div>
+<div class="price-daily muted" data-plan-daily="free">Навсегда бесплатно</div>
+<ul class="price-features">
+<li>30 откликов в день</li>
+<li>3 площадки на выбор</li>
+<li>Стандартный приоритет</li>
+<li class="off">Без AI-сопроводительного</li>
+</ul>
+{% if current_plan_slug == 'free' %}
+<button type="button" class="btn-plan" disabled>Текущий план</button>
+{% else %}
+<button type="button" class="btn-plan" data-plan-select="free">Начать бесплатно</button>
+{% endif %}
+</div>
+
+{# PRO (was BASIC) — featured / popular #}
+<div class="price-card featured {% if current_plan_slug == 'basic' %}current{% endif %}" data-plan-card="basic">
+{% if current_plan_slug != 'basic' %}<div class="featured-tag">ПОПУЛЯРНЫЙ</div>{% endif %}
+<div class="price-name accent">PRO</div>
+<div class="price-val"><span data-plan-price="basic">1 990</span><span class="currency">₽</span></div>
+<div class="price-daily" data-plan-daily="basic">≈ 284 ₽/день <span class="old">330 ₽</span></div>
+<ul class="price-features">
+<li>100 откликов в день</li>
+<li>Все 20+ площадок</li>
+<li>Отклик в течение часа</li>
+<li>AI-сопроводительное под каждую вакансию</li>
+<li>Умный алгоритм матчинга</li>
+</ul>
+{% if current_plan_slug == 'basic' %}
+<button type="button" class="btn-plan accent" disabled>Текущий план</button>
+{% else %}
+<button type="button" class="btn-plan accent" data-plan-select="basic">Получить Pro</button>
+{% endif %}
+</div>
+
+{# PREMIUM (was PRO) #}
+<div class="price-card {% if current_plan_slug == 'pro' %}current{% endif %}" data-plan-card="pro">
+<div class="price-name">PREMIUM</div>
+<div class="price-val"><span data-plan-price="pro">2 990</span><span class="currency">₽</span></div>
+<div class="price-daily" data-plan-daily="pro">≈ 427 ₽/день <span class="old">497 ₽</span></div>
+<ul class="price-features">
+<li>Неограниченные отклики</li>
+<li>Отклик в течение 5 минут</li>
+<li>Автоответы на анкеты</li>
+<li>Автоподнятие резюме</li>
+<li>Приоритетная поддержка</li>
+</ul>
+{% if current_plan_slug == 'pro' %}
+<button type="button" class="btn-plan outlined-accent" disabled>Текущий план</button>
+{% else %}
+<button type="button" class="btn-plan outlined-accent" data-plan-select="pro">Получить Premium</button>
+{% endif %}
+</div>
+</div>
+<div class="mt-20 grid grid-cols-2 gap-12">
+<div class="p-8 bg-zinc-50 rounded-2xl border border-zinc-100">
+<h4 class="font-bold text-zinc-900 mb-2 flex items-center gap-2">
+<i class="ph-bold ph-shield-check text-[#16a34a]"></i>
+Безопасность оплаты
+</h4>
+<p class="text-xs text-zinc-500 leading-relaxed">Все платежи защищены протоколом SSL и обрабатываются сертифицированными эквайерами. Мы не храним данные ваших карт на наших серверах.</p>
+</div>
+<div class="p-8 bg-zinc-50 rounded-2xl border border-zinc-100">
+<h4 class="font-bold text-zinc-900 mb-2 flex items-center gap-2">
+<i class="ph-bold ph-arrows-counter-clockwise text-[#16a34a]"></i>
+Возврат средств
+</h4>
+<p class="text-xs text-zinc-500 leading-relaxed">Если сервис вам не подошёл, мы вернём деньги за неиспользованные дни подписки в течение 24 часов после обращения в поддержку.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+(function () {
+  // ─── Duration toggle (3д / 7д / 14д) ─────────────────────────────────
+  // Each duration carries its own price for each plan.  Switching the
+  // toggle just rewrites the prices in the cards above.
+  // Total price (RUB) per (plan, duration_days).  Per-day breakdown and
+  // savings vs the 3-day baseline are derived from this map.
+  const TOTAL_RUB = {
+    free:  { 3: 0,    7: 0,    14: 0    },
+    basic: { 3: 990,  7: 1990, 14: 3290 },
+    pro:   { 3: 1490, 7: 2990, 14: 4990 },
+  };
+  function fmt(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+  function perDay(slug, days) {
+    return TOTAL_RUB[slug][days] / Number(days);
+  }
+  // Fixed marketing discounts shown both on the duration toggle and
+  // on each plan card next to the strikethrough baseline.  Kept in sync
+  // with `.duration-discount-badge` in the toggle markup so the user
+  // sees the same number in both places.
+  const DURATION_DISCOUNT = { '3': 0, '7': 15, '14': 30 };
+  function savingsPct(slug, days) {
+    if (slug === 'free') return 0;
+    return DURATION_DISCOUNT[String(days)] || 0;
+  }
+  const buttons = document.querySelectorAll('.duration-btn');
+  let currentDuration = '7';
+  function applyDuration(d) {
+    currentDuration = d;
+    document.querySelectorAll('[data-plan-price]').forEach((el) => {
+      const slug = el.getAttribute('data-plan-price');
+      if (TOTAL_RUB[slug] && TOTAL_RUB[slug][d] !== undefined) {
+        el.textContent = fmt(TOTAL_RUB[slug][d]);
+      }
+    });
+    document.querySelectorAll('[data-plan-daily]').forEach((el) => {
+      const slug = el.getAttribute('data-plan-daily');
+      if (slug === 'free') {
+        el.textContent = 'Навсегда бесплатно';
+        el.classList.add('muted');
+        return;
+      }
+      el.classList.remove('muted');
+      const cur = fmt(perDay(slug, d));
+      const base = fmt(perDay(slug, 3));
+      const pct = savingsPct(slug, d);
+      if (pct > 0) {
+        // Show old per-day price crossed out + a green savings pill.
+        el.innerHTML = '≈ ' + cur + ' ₽/день <span class="old">' + base + ' ₽</span> <span class="saving-pill">−' + pct + '%</span>';
+      } else {
+        el.innerHTML = '≈ ' + cur + ' ₽/день';
+      }
+    });
+    buttons.forEach((b) => {
+      const isActive = b.getAttribute('data-duration') === d;
+      b.classList.toggle('active', isActive);
+      b.classList.toggle('text-zinc-500', !isActive);
+      b.classList.toggle('hover:text-zinc-700', !isActive);
+    });
+  }
+  buttons.forEach((b) => b.addEventListener('click', () => applyDuration(b.getAttribute('data-duration'))));
+  // Initial paint (sync the static HTML with the JS-derived per-day values).
+  applyDuration('7');
+
+  // ─── Plan select buttons ────────────────────────────────────────────
+  const flash = document.getElementById('planFlash');
+  function showFlash(msg, ok) {
+    if (!flash) return;
+    flash.textContent = msg;
+    flash.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-red-50', 'text-red-700');
+    flash.classList.add(ok ? 'bg-emerald-50' : 'bg-red-50');
+    flash.classList.add(ok ? 'text-emerald-700' : 'text-red-700');
+    setTimeout(() => { flash.classList.add('hidden'); }, 3500);
+  }
+  document.querySelectorAll('[data-plan-select]').forEach((btn) => {
+    if (btn.disabled) return;
+    btn.addEventListener('click', async () => {
+      const plan = btn.getAttribute('data-plan-select');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Обработка…';
+      try {
+        const res = await fetch('/api/settings/subscription/select', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: plan, duration_days: Number(currentDuration) }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.detail || 'Ошибка');
+        showFlash(data.message || 'План обновлён', true);
+        setTimeout(() => { window.location.reload(); }, 800);
+      } catch (e) {
+        showFlash(String(e && e.message ? e.message : 'Не удалось сменить план'), false);
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  });
+
+  // ─── Logout ────────────────────────────────────────────────────────
+  const lo = document.getElementById('logoutBtn');
+  if (lo) {
+    lo.addEventListener('click', async () => {
+      try {
+        await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      } catch (e) { /* ignore */ }
+      window.location.href = '/';
+    });
+  }
+})();
+</script>
+</body></html>
