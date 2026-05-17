@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Offerday — Настройки</title>
+<link href="/static/fonts/fonts.css" rel="stylesheet"/>
+<link href="/static/icons/phosphor-bold.css" rel="stylesheet"/>
+<link href="/static/icons/phosphor-fill.css" rel="stylesheet"/>
+<style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            --accent: #16a34a;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #09090b;
+            margin: 0;
+        }
+
+        .mono { font-family: var(--font-mono); }
+
+        .sidebar-item.active {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--accent);
+            border-right: 3px solid var(--accent);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e4e4e7;
+            border-radius: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e4e4e7;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+<style type="text/css">
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}/*
+! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
+*//*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+.fixed {
+  position: fixed;
+}
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+.right-4 {
+  right: 1rem;
+}
+.top-4 {
+  top: 1rem;
+}
+.z-50 {
+  z-index: 50;
+}
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-4 {
+  margin-top: 1rem;
+}
+.mt-8 {
+  margin-top: 2rem;
+}
+.flex {
+  display: flex;
+}
+.grid {
+  display: grid;
+}
+.h-10 {
+  height: 2.5rem;
+}
+.h-12 {
+  height: 3rem;
+}
+.h-20 {
+  height: 5rem;
+}
+.h-4 {
+  height: 1rem;
+}
+.h-8 {
+  height: 2rem;
+}
+.h-screen {
+  height: 100vh;
+}
+.w-10 {
+  width: 2.5rem;
+}
+.w-12 {
+  width: 3rem;
+}
+.w-20 {
+  width: 5rem;
+}
+.w-4 {
+  width: 1rem;
+}
+.w-64 {
+  width: 16rem;
+}
+.w-8 {
+  width: 2rem;
+}
+.w-full {
+  width: 100%;
+}
+.min-w-0 {
+  min-width: 0px;
+}
+.flex-1 {
+  flex: 1 1 0%;
+}
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.resize-none {
+  resize: none;
+}
+.appearance-none {
+  appearance: none;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.items-start {
+  align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-1 {
+  gap: 0.25rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.gap-3 {
+  gap: 0.75rem;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.gap-6 {
+  gap: 1.5rem;
+}
+.gap-x-8 {
+  column-gap: 2rem;
+}
+.gap-y-6 {
+  row-gap: 1.5rem;
+}
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+.space-y-12 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(3rem * var(--tw-space-y-reverse));
+}
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+}
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.rounded-2xl {
+  border-radius: 1rem;
+}
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+.rounded-\[2px\] {
+  border-radius: 2px;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+.border {
+  border-width: 1px;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-4 {
+  border-width: 4px;
+}
+.border-r {
+  border-right-width: 1px;
+}
+.border-t {
+  border-top-width: 1px;
+}
+.border-dashed {
+  border-style: dashed;
+}
+.border-\[\#16a34a\]\/20 {
+  border-color: rgb(22 163 74 / 0.2);
+}
+.border-red-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(254 226 226 / var(--tw-border-opacity, 1));
+}
+.border-red-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(254 202 202 / var(--tw-border-opacity, 1));
+}
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+.border-zinc-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
+}
+.border-zinc-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(228 228 231 / var(--tw-border-opacity, 1));
+}
+.border-zinc-50 {
+  --tw-border-opacity: 1;
+  border-color: rgb(250 250 250 / var(--tw-border-opacity, 1));
+}
+.bg-\[\#00b2ff\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 178 255 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#16a34a\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#16a34a\]\/10 {
+  background-color: rgb(22 163 74 / 0.1);
+}
+.bg-\[\#ef4444\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1));
+}
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
+}
+.bg-blue-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
+}
+.bg-blue-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
+}
+.bg-emerald-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1));
+}
+.bg-emerald-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 253 245 / var(--tw-bg-opacity, 1));
+}
+.bg-emerald-50\/50 {
+  background-color: rgb(236 253 245 / 0.5);
+}
+.bg-purple-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 245 255 / var(--tw-bg-opacity, 1));
+}
+.bg-red-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
+}
+.bg-red-50\/50 {
+  background-color: rgb(254 242 242 / 0.5);
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.bg-yellow-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(212 212 216 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50\/50 {
+  background-color: rgb(250 250 250 / 0.5);
+}
+.bg-zinc-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(39 39 42 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+}
+.p-10 {
+  padding: 2.5rem;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+.p-4 {
+  padding: 1rem;
+}
+.p-5 {
+  padding: 1.25rem;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.p-8 {
+  padding: 2rem;
+}
+.px-1\.5 {
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.px-8 {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.text-\[10px\] {
+  font-size: 10px;
+}
+.text-\[11px\] {
+  font-size: 11px;
+}
+.text-\[8px\] {
+  font-size: 8px;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-black {
+  font-weight: 900;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-extrabold {
+  font-weight: 800;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.leading-relaxed {
+  line-height: 1.625;
+}
+.leading-tight {
+  line-height: 1.25;
+}
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+.text-\[\#16a34a\] {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+.text-\[\#ef4444\] {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+.text-blue-500 {
+  --tw-text-opacity: 1;
+  color: rgb(59 130 246 / var(--tw-text-opacity, 1));
+}
+.text-blue-600 {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity, 1));
+}
+.text-emerald-500 {
+  --tw-text-opacity: 1;
+  color: rgb(16 185 129 / var(--tw-text-opacity, 1));
+}
+.text-emerald-700 {
+  --tw-text-opacity: 1;
+  color: rgb(4 120 87 / var(--tw-text-opacity, 1));
+}
+.text-purple-500 {
+  --tw-text-opacity: 1;
+  color: rgb(168 85 247 / var(--tw-text-opacity, 1));
+}
+.text-red-400 {
+  --tw-text-opacity: 1;
+  color: rgb(248 113 113 / var(--tw-text-opacity, 1));
+}
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+.text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity, 1));
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+.text-yellow-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 224 71 / var(--tw-text-opacity, 1));
+}
+.text-zinc-300 {
+  --tw-text-opacity: 1;
+  color: rgb(212 212 216 / var(--tw-text-opacity, 1));
+}
+.text-zinc-400 {
+  --tw-text-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-text-opacity, 1));
+}
+.text-zinc-500 {
+  --tw-text-opacity: 1;
+  color: rgb(113 113 122 / var(--tw-text-opacity, 1));
+}
+.text-zinc-600 {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.text-zinc-700 {
+  --tw-text-opacity: 1;
+  color: rgb(63 63 70 / var(--tw-text-opacity, 1));
+}
+.text-zinc-900 {
+  --tw-text-opacity: 1;
+  color: rgb(24 24 27 / var(--tw-text-opacity, 1));
+}
+.accent-\[\#16a34a\] {
+  accent-color: #16a34a;
+}
+.opacity-75 {
+  opacity: 0.75;
+}
+.opacity-80 {
+  opacity: 0.8;
+}
+.opacity-90 {
+  opacity: 0.9;
+}
+.shadow-inner {
+  --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-sm {
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.hover\:border-\[\#16a34a\]\/50:hover {
+  border-color: rgb(22 163 74 / 0.5);
+}
+.hover\:bg-\[\#15803d\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-\[\#16a34a\]\/20:hover {
+  background-color: rgb(22 163 74 / 0.2);
+}
+.hover\:bg-blue-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-red-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.hover\:text-zinc-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+.focus\:border-\[\#16a34a\]:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(22 163 74 / var(--tw-border-opacity, 1));
+}
+.focus\:outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.hidden {
+  display: none !important;
+}
+.h-full { height: 100%; }
+.items-stretch { align-items: stretch; }
+.whitespace-nowrap { white-space: nowrap; }
+.bg-blue-500 { background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1)); }
+.hover\:bg-blue-600:hover { background-color: rgb(37 99 235); }
+.bg-blue-50\/40 { background-color: rgb(239 246 255 / 0.4); }
+.border-blue-200 { border-color: rgb(191 219 254); }
+.border-blue-200\/60 { border-color: rgb(191 219 254 / 0.6); }
+button:disabled,
+input:disabled {
+  opacity: 1;
+}
+.disabled\:bg-zinc-100:disabled { background-color: rgb(244 244 245); }
+.disabled\:bg-zinc-200:disabled { background-color: rgb(228 228 231); }
+.disabled\:text-zinc-400:disabled { color: rgb(161 161 170); }
+.disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+.accent-\[\#16a34a\] { accent-color: #16a34a; }
+@media (min-width: 768px) {
+
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .md\:flex-row {
+    flex-direction: row;
+  }
+  .md\:items-center {
+    align-items: center;
+  }
+  .md\:w-auto {
+    width: auto;
+  }
+}* {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  
+/* Quota widget — pixel-identical on /dashboard, /responses, /chats,
+   /settings, /tariffs.  Styled directly so it doesn't depend on which
+   Tailwind utilities each page happens to ship.  ---------------------*/
+.quota-widget { background: #fafafa; border-radius: 12px; padding: 16px; }
+.quota-widget + .profile-card { margin-top: 12px; }
+.qw-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+.qw-numbers {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+.qw-num { font-size: 24px; font-weight: 900; color: #18181b; }
+.qw-sep { font-size: 22px; font-weight: 700; color: #d4d4d8; padding: 0 2px; }
+.qw-den { font-size: 24px; font-weight: 700; color: #a1a1aa; }
+.qw-bar-track {
+    height: 6px;
+    width: 100%;
+    background: #e4e4e7;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.qw-bar-fill {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 9999px;
+    transition: width 0.2s ease;
+}
+.qw-status { font-size: 11px; color: #71717a; line-height: 1.3; }
+</style></head>
+<body class="flex overflow-hidden w-full h-screen">
+<aside class="w-64 h-screen bg-white border-r border-zinc-200 flex flex-col z-50 shrink-0">
+<div class="px-6 py-6 flex items-center gap-2" style="height:64px;">
+<div class="bg-[#16a34a] rounded-sm shrink-0" style="width:8px;height:8px;"></div>
+<span class="font-extrabold" style="font-size:16px;line-height:24px;letter-spacing:-0.025em;">OFFERDAY</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/dashboard"><i class="ph-bold ph-chart-bar text-lg"></i> Статистика</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/responses"><i class="ph-bold ph-paper-plane-tilt text-lg"></i> Отклики</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/chats"><i class="ph-bold ph-chats-circle text-lg"></i> Чаты</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-zinc-900 text-white" href="/settings"><i class="ph-bold ph-gear-six text-lg"></i> Настройки</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/tariffs"><i class="ph-bold ph-credit-card text-lg"></i> Тарифы</a>
+</nav>
+<div class="p-4 space-y-3 border-t border-zinc-100">
+<div class="quota-widget" data-quota-widget>
+<div class="qw-label">Отклики сегодня</div>
+<div class="qw-numbers">
+<span class="qw-num">{{ responses_used_today|default(0) }}</span>
+<span class="qw-sep">/</span>
+<span class="qw-den">{{ responses_daily_limit_label|default('∞') }}</span>
+</div>
+{% if responses_daily_limit and responses_daily_limit > 0 %}
+{% set quota_pct = ((responses_used_today | default(0)) * 100 / responses_daily_limit) | round(0, 'floor') | int %}
+{% if quota_pct > 100 %}{% set quota_pct = 100 %}{% endif %}
+<div class="qw-bar-track">
+<div class="qw-bar-fill" style="width: {{ quota_pct }}%;"></div>
+</div>
+{% endif %}
+<div class="qw-status">{{ responses_quota_status|default('Лимит обновляется в 00:00.') }}</div>
+</div>
+<a class="profile-card flex items-center gap-3 px-2 py-2 -mx-2 rounded-lg hover:bg-zinc-100 transition-colors group" href="/settings" title="Открыть настройки">
+<div class="rounded-full bg-zinc-900 text-white font-extrabold flex items-center justify-center shrink-0" style="width:36px;height:36px;font-size:12px;line-height:1;">{{ (user.first_name or '?')[0] }}{{ (user.last_name or '')[:1] }}</div>
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold truncate text-zinc-900">{{ user.first_name|default('') }} {{ (user.last_name or '')[:1] }}{{ '.' if user.last_name else '' }}</div>
+<div class="text-[10px] text-zinc-400 truncate">{{ user.title|default('Кандидат') }}</div>
+</div>
+<i class="ph-bold ph-caret-right text-zinc-300 group-hover:text-zinc-500 transition-colors text-base"></i>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col p-8 overflow-hidden">
+<header class="flex justify-between items-end mb-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Настройки</h1>
+<p class="text-zinc-500 mt-1">Управление вашим аккаунтом и предпочтениями.</p>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto custom-scrollbar bg-white border border-zinc-200 rounded-3xl shadow-sm">
+<div class="p-10 space-y-12">
+<!-- Один большой блок «Резюме»: ссылка + дроп-зона на одной строке,
+     личные данные и желаемая роль вместе, без разделителей. -->
+<section data-section="resume">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono">Резюме</h3>
+</div>
+
+<!-- Ссылка на профиль (слева) + дроп-зона PDF (справа) — одна строка -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-stretch">
+<form id="resumeUrlForm" class="p-4 bg-zinc-50 border border-zinc-200 rounded-2xl flex flex-col gap-3 h-full">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono flex items-center gap-2">
+<i class="ph-bold ph-link"></i>
+                            Ссылка на профиль (hh.ru / LinkedIn)
+                        </label>
+<input id="resumeUrlInput" name="url" type="url" inputmode="url"
+       placeholder="https://hh.ru/resume/... или https://linkedin.com/in/..."
+       class="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors"
+       value="{{ prefs.profile_url or '' }}"/>
+<div class="mt-auto">
+<button type="submit" class="w-full md:w-auto px-4 py-2 bg-[#16a34a] text-white rounded-xl text-xs font-bold shadow-sm hover:bg-[#15803d] transition-colors whitespace-nowrap">
+                                Сохранить изменения
+                            </button>
+</div>
+</form>
+<form id="resumeUploadForm" class="p-4 border-2 border-dashed border-zinc-200 rounded-2xl text-center hover:border-[#16a34a]/50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 h-full" data-dropzone>
+<input id="resumeFileInput" type="file" name="file" accept=".pdf,.doc,.docx,.txt" class="hidden"/>
+<i class="ph-bold ph-cloud-arrow-up text-3xl text-zinc-300"></i>
+<p class="text-sm font-semibold text-zinc-600" data-dropzone-label>Перетащите PDF сюда</p>
+<p class="text-[11px] text-zinc-400">PDF / DOC / DOCX / TXT, до 10 MB</p>
+<button type="button" id="resumeChooseBtn" class="mt-1 px-4 py-2 bg-[#16a34a]/10 text-[#16a34a] rounded-lg text-xs font-semibold hover:bg-[#16a34a]/20 transition-colors">
+                            Выбрать PDF
+                        </button>
+</form>
+</div>
+
+<!-- Личные данные внутри блока «Резюме» (без отступа hr) -->
+<div class="flex items-center gap-6 mb-8">
+<div class="rounded-full bg-zinc-200 flex items-center justify-center font-bold text-zinc-600 border-4 border-zinc-50 shadow-inner shrink-0" style="width:80px;height:80px;font-size:24px;line-height:1;">{{ user_initials }}</div>
+<div>
+<h2 class="text-xl font-bold text-zinc-900">{{ user_full_name or '' }}</h2>
+<p class="text-sm text-zinc-500">{{ user.email or '' }}</p>
+<button id="changePhotoBtn" type="button" class="mt-2 text-xs font-bold text-[#16a34a] hover:underline">Изменить фото</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-x-8 gap-y-6 mb-8">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Имя</label>
+<input id="profileFirstName" name="first_name" data-profile-field class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="text" value="{{ user.first_name or '' }}"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Фамилия</label>
+<input id="profileLastName" name="last_name" data-profile-field class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="text" value="{{ user.last_name or '' }}"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Email</label>
+<input id="profileEmail" name="email" data-profile-field class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="email" value="{{ user.email or '' }}"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Телефон</label>
+<input id="profilePhone" name="phone" data-profile-field class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="tel" value="{{ user.phone or '' }}"/>
+</div>
+</div>
+
+<!-- Поля «желаемой роли» — продолжение блока «Резюме», без подзаголовка -->
+<div class="grid grid-cols-2 gap-x-8 gap-y-6 mb-6">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Позиция</label>
+<input data-pref-field name="position" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="text" value="{{ prefs.position or '' }}"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Грейд</label>
+<select data-pref-field name="grade" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors appearance-none">
+{% for opt in ['Junior', 'Middle', 'Middle+', 'Senior', 'Lead', 'Principal'] %}
+<option value="{{ opt }}" {% if prefs.grade == opt %}selected{% endif %}>{{ opt }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Стек технологий</label>
+<input data-pref-field name="stack" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="text" value="{{ prefs.stack or '' }}"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Зарплатная вилка</label>
+<input data-pref-field name="salary" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" type="text" value="{{ prefs.salary or '' }}"/>
+</div>
+</div>
+
+<!-- Локация (слева) + Стоп-слова (справа) — одна строка -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mb-6">
+<div class="p-5 bg-zinc-50 rounded-2xl flex flex-col h-full">
+<h4 class="text-xs font-bold text-zinc-700 mb-4 flex items-center gap-2">
+<i class="ph-bold ph-map-pin text-zinc-400"></i>
+                        Локация и формат работы
+                    </h4>
+<div class="flex flex-wrap gap-3">
+{% for fmt in ['Удалёнка', 'Офис', 'Гибрид', 'Вахта', 'Разъездная'] %}
+<label class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-zinc-200 cursor-pointer">
+<input data-work-format class="w-4 h-4 accent-[#16a34a]" name="work_format" type="checkbox" value="{{ fmt }}"{% if fmt in (prefs.work_formats or []) %} checked{% endif %}/>
+<span class="text-xs font-semibold text-zinc-700">{{ fmt }}</span>
+</label>
+{% endfor %}
+</div>
+</div>
+<div class="p-5 bg-zinc-50 rounded-2xl flex flex-col h-full">
+<h4 class="text-xs font-bold text-zinc-700 mb-4 flex items-center gap-2">
+<i class="ph-bold ph-text-t text-zinc-400"></i>
+                        Стоп-слова в описании
+                    </h4>
+<input data-pref-field name="stop_words" class="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors" placeholder="legacy, jQuery, WordPress..." type="text" value="{{ prefs.stop_words or '' }}"/>
+<p class="text-[10px] text-zinc-400 mt-2">Вакансии с этими словами будут исключены</p>
+</div>
+</div>
+
+<div class="mt-8 flex items-center gap-3">
+<button id="saveProfileAndPrefsBtn" type="button" class="bg-[#16a34a] text-white px-8 py-3 rounded-xl font-bold text-sm shadow-sm hover:bg-[#15803d] transition-colors">Сохранить изменения</button>
+<span id="saveProfileAndPrefsStatus" class="text-xs text-zinc-400 hidden" data-status></span>
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<!-- Доступы для ручного входа на площадки -->
+<section data-section="platform-access">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono">Доступы для ручного входа</h3>
+<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded">Авто-сгенерированы</span>
+</div>
+<p class="text-[11px] text-zinc-500 mb-4 leading-relaxed">
+  Эти логин и пароль мы используем для регистрации ваших аккаунтов на площадках (например, на Habr Career). Вы тоже можете воспользоваться ими, чтобы зайти руками на площадку под тем же аккаунтом.
+</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="space-y-2">
+    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Временная почта</label>
+    <div class="flex items-stretch gap-2">
+      <input id="platformAccessEmail" readonly type="text"
+             value="{{ platform_access.temp_email or '' }}"
+             placeholder="—"
+             class="flex-1 bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm font-mono text-zinc-700 focus:outline-none"/>
+      <button type="button" data-copy-target="platformAccessEmail"
+              class="px-3 py-2 bg-zinc-100 text-zinc-600 rounded-xl text-[11px] font-bold hover:bg-zinc-200 transition-colors">
+        Копировать
+      </button>
+    </div>
+    <p class="text-[10px] text-zinc-400">Выдана сервисом temp.coda.ink при регистрации.</p>
+  </div>
+  <div class="space-y-2">
+    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Пароль</label>
+    <div class="flex items-stretch gap-2">
+      <input id="platformAccessPassword" readonly type="password"
+             value="{{ platform_access.password or '' }}"
+             placeholder="—"
+             class="flex-1 bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm font-mono text-zinc-700 focus:outline-none"/>
+      <button type="button" id="platformAccessPasswordToggle"
+              class="px-3 py-2 bg-zinc-100 text-zinc-600 rounded-xl text-[11px] font-bold hover:bg-zinc-200 transition-colors">
+        Показать
+      </button>
+      <button type="button" data-copy-target="platformAccessPassword"
+              class="px-3 py-2 bg-zinc-100 text-zinc-600 rounded-xl text-[11px] font-bold hover:bg-zinc-200 transition-colors">
+        Копировать
+      </button>
+    </div>
+    <p class="text-[10px] text-zinc-400">Сгенерирован детерминированно из вашего ID и хранится в БД.</p>
+  </div>
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<!-- Подключённые площадки -->
+<section data-section="platforms">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono">Подключённые площадки</h3>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded">{{ platform_credentials_active | default(0) }} активно</span>
+<span class="px-2 py-1 bg-zinc-100 text-zinc-500 text-[10px] font-bold rounded">{{ platform_credentials_disconnected | default(0) }} не подключено</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+{% for p in platforms_list %}
+<div class="platform-card p-4 rounded-xl flex flex-col gap-3
+            {% if p.status == 'active' %}bg-white border border-zinc-200
+            {% elif p.status in ('error', 'expired') %}bg-red-50/50 border border-red-200
+            {% elif p.status == 'captcha_required' %}bg-amber-50/50 border border-amber-200
+            {% else %}bg-zinc-50 border border-zinc-200 opacity-90{% endif %}"
+     data-platform="{{ p.slug }}"
+     data-status="{{ p.status }}"
+     data-name="{{ p.name }}">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+{% if p.icon_kind == 'text' %}
+<div class="w-8 h-8 rounded-lg {{ p.icon_bg }} text-white flex items-center justify-center text-[8px] font-black flex-shrink-0">{{ p.icon_text }}</div>
+{% else %}
+<div class="w-8 h-8 rounded-lg {{ p.icon_bg }} text-white flex items-center justify-center flex-shrink-0">
+<i class="ph-bold {{ p.icon_class }} text-sm"></i>
+</div>
+{% endif %}
+<div class="min-w-0">
+<div class="text-xs font-bold text-zinc-900 truncate">{{ p.name }}</div>
+<div class="text-[10px] truncate
+            {% if p.status in ('error', 'expired') %}text-red-500
+            {% elif p.status == 'captcha_required' %}text-amber-600
+            {% else %}text-zinc-400{% endif %}"
+     data-status-subtitle>
+{% if p.status == 'active' %}{{ p.subtitle }} • Активно
+{% elif p.status == 'captcha_required' %}Ожидаем код подтверждения
+{% elif p.status == 'expired' %}Сессия протухла
+{% elif p.status == 'error' %}Ошибка подключения
+{% else %}{{ p.subtitle }} • Не подключено{% endif %}
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+{% if p.status == 'active' %}
+<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded flex items-center gap-1" data-status-badge>
+<i class="ph-bold ph-check"></i>
+                                Активно
+                            </span>
+<button type="button" data-action="disconnect" class="px-3 py-1.5 bg-white border border-zinc-200 text-zinc-600 rounded-lg text-[10px] font-bold hover:bg-zinc-100 transition-colors">
+                                Отключить
+                            </button>
+{% elif p.status in ('error', 'expired') %}
+<button type="button" data-action="connect" class="px-3 py-1.5 bg-white border border-red-200 text-red-600 rounded-lg text-[10px] font-bold hover:bg-red-100 transition-colors">
+                                Переподключить
+                            </button>
+{% elif p.status == 'captcha_required' %}
+<button type="button" data-action="connect" class="px-3 py-1.5 bg-white border border-amber-300 text-amber-700 rounded-lg text-[10px] font-bold hover:bg-amber-100 transition-colors">
+                                Отправить код заново
+                            </button>
+{% else %}
+<button type="button" data-action="connect" class="px-3 py-1.5 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold hover:bg-zinc-200 transition-colors">
+                                Подключить
+                            </button>
+{% endif %}
+</div>
+</div>
+<div class="otp-area {% if not p.has_pending_code %}hidden{% endif %} pt-3 border-t border-zinc-200/60"
+     data-otp-area>
+<div class="flex flex-col md:flex-row md:items-center gap-2">
+<input type="text" inputmode="numeric" maxlength="8" pattern="\d{4,8}"
+       class="flex-1 bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm tracking-widest text-center font-mono focus:outline-none focus:border-[#16a34a] transition-colors disabled:bg-zinc-100 disabled:text-zinc-400 disabled:cursor-not-allowed"
+       placeholder="••••••" data-otp-input
+       {% if not p.has_pending_code %}disabled{% endif %}/>
+<div class="flex items-center gap-2">
+<button type="button" data-action="verify" {% if not p.has_pending_code %}disabled{% endif %} class="px-3 py-2 bg-[#16a34a] text-white rounded-lg text-[11px] font-bold hover:bg-[#15803d] transition-colors disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
+                                Подтвердить
+                            </button>
+<button type="button" data-action="cancel" class="px-3 py-2 bg-zinc-100 text-zinc-600 rounded-lg text-[11px] font-bold hover:bg-zinc-200 transition-colors">
+                                Отмена
+                            </button>
+</div>
+</div>
+<div class="mt-2 text-[10px] text-zinc-400" data-otp-hint>
+                            {% if p.has_pending_code %}Введите код подтверждения, который мы отправили в SMS / на email площадки.
+                            {% else %}Сначала нажмите «Подключить» — мы отправим код подтверждения.{% endif %}
+                        </div>
+</div>
+</div>
+{% endfor %}
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<section data-section="notifications">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono mb-6">Уведомления</h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+<i class="ph-bold ph-envelope-simple text-xl"></i>
+</div>
+<div>
+<div class="text-sm font-bold text-zinc-900">Email-уведомления</div>
+<div class="text-xs text-zinc-500">Получайте письма о новых откликах и статусах</div>
+</div>
+</div>
+<label class="toggle-switch">
+<input data-notif-key="email" type="checkbox" {% if notifications.email %}checked{% endif %}/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center">
+<i class="ph-bold ph-bell text-xl"></i>
+</div>
+<div>
+<div class="text-sm font-bold text-zinc-900">Push-уведомления</div>
+<div class="text-xs text-zinc-500">Мгновенные уведомления в браузере</div>
+</div>
+</div>
+<label class="toggle-switch">
+<input data-notif-key="push" type="checkbox" {% if notifications.push %}checked{% endif %}/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+<i class="ph-bold ph-chats-teardrop text-xl"></i>
+</div>
+<div>
+<div class="text-sm font-bold text-zinc-900">Уведомления о сообщениях</div>
+<div class="text-xs text-zinc-500">Когда рекрутер пишет вам в чате</div>
+</div>
+</div>
+<label class="toggle-switch">
+<input data-notif-key="messages" type="checkbox" {% if notifications.messages %}checked{% endif %}/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-500 flex items-center justify-center">
+<i class="ph-bold ph-telegram-logo text-xl"></i>
+</div>
+<div>
+<div class="text-sm font-bold text-zinc-900">Telegram-уведомления</div>
+<div class="text-xs text-zinc-500">Дублировать события в Telegram-бот{% if not telegram_chat_id %} (после привязки бота){% endif %}</div>
+</div>
+</div>
+<label class="toggle-switch">
+<input data-notif-key="telegram" type="checkbox" {% if notifications.telegram %}checked{% endif %}/>
+<span class="slider"></span>
+</label>
+</div>
+
+<!-- Карточка «Привязка аккаунта»: появляется только когда тумблер включён -->
+<div id="telegramLinkCard"
+     class="rounded-2xl border border-blue-200/60 bg-blue-50/40 p-4 flex items-center gap-3 {% if not notifications.telegram %}hidden{% endif %}">
+<div class="w-10 h-10 rounded-xl bg-white border border-blue-200 text-blue-500 flex items-center justify-center flex-shrink-0">
+<i class="ph-bold ph-telegram-logo text-xl"></i>
+</div>
+<div class="flex-1 min-w-0">
+<div class="text-sm font-bold text-zinc-900">Привязка аккаунта</div>
+<div class="text-xs text-zinc-500">
+{% if telegram_chat_id %}
+                                Аккаунт уже привязан — уведомления приходят в бот.
+                            {% else %}
+                                Откройте бот и нажмите «Старт», чтобы получать уведомления в Telegram.
+                            {% endif %}
+                        </div>
+</div>
+<a id="telegramOpenBotBtn" href="https://t.me/OfferdayBot{% if telegram_link_token %}?start=offerday_{{ telegram_link_token }}{% endif %}"
+   target="_blank" rel="noopener"
+   class="px-4 py-2 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600 transition-colors flex items-center gap-2 flex-shrink-0">
+<i class="ph-bold ph-paper-plane-right"></i>
+                            Открыть бот
+                        </a>
+</div>
+
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-400 flex items-center justify-center">
+<i class="ph-bold ph-calendar-check text-xl"></i>
+</div>
+<div>
+<div class="text-sm font-bold text-zinc-900">Еженедельный дайджест</div>
+<div class="text-xs text-zinc-500">Сводка по вакансиям и рынку за неделю</div>
+</div>
+</div>
+<label class="toggle-switch">
+<input data-notif-key="weekly" type="checkbox" {% if notifications.weekly %}checked{% endif %}/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<section data-section="security">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono mb-6">Приватность и безопасность</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<button id="changePasswordBtn" type="button" class="flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-2xl hover:bg-zinc-100 transition-colors text-left">
+<div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-zinc-500">
+<i class="ph-bold ph-lock text-lg"></i>
+</div>
+<div>
+<div class="text-xs font-bold text-zinc-900">Изменить пароль</div>
+<div class="text-[10px] text-zinc-500">Задайте новый пароль входа</div>
+</div>
+</button>
+<button id="toggle2faBtn" type="button" data-enabled="{{ '1' if user.two_factor_enabled else '0' }}" class="flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-2xl hover:bg-zinc-100 transition-colors text-left">
+<div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-zinc-500">
+<i class="ph-bold ph-shield-check text-lg"></i>
+</div>
+<div>
+<div class="text-xs font-bold text-zinc-900 flex items-center gap-2">
+                                    2FA Аутентификация
+                                    <span id="twoFaBadge" class="{% if not user.two_factor_enabled %}hidden {% endif %}px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-black rounded uppercase">Вкл</span>
+</div>
+<div class="text-[10px] text-zinc-500">Защитите свой аккаунт</div>
+</div>
+</button>
+<button id="manageSessionsBtn" type="button" class="flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-2xl hover:bg-zinc-100 transition-colors text-left">
+<div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-zinc-500">
+<i class="ph-bold ph-monitor text-lg"></i>
+</div>
+<div>
+<div class="text-xs font-bold text-zinc-900">Управление сессиями</div>
+<div class="text-[10px] text-zinc-500">Завершить эту сессию</div>
+</div>
+</button>
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<section data-section="language">
+<h3 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mono mb-6">Язык и регион</h3>
+<div class="grid grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Язык интерфейса</label>
+<select id="languageSelect" data-language-field="language" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors appearance-none">
+{% for opt in ['Русский', 'English', 'Deutsch'] %}
+<option {% if prefs.language == opt %}selected{% endif %}>{{ opt }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Валюта</label>
+<select id="currencySelect" data-language-field="currency" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors appearance-none">
+{% for opt in ['RUB ₽', 'USD $', 'EUR €'] %}
+<option {% if prefs.currency == opt %}selected{% endif %}>{{ opt }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mono">Часовой пояс</label>
+<select id="timezoneSelect" data-language-field="timezone" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16a34a] transition-colors appearance-none">
+{% for opt in ['Москва, GMT+3', 'London, GMT+0', 'New York, GMT-5'] %}
+<option {% if prefs.timezone == opt %}selected{% endif %}>{{ opt }}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+</section>
+<hr class="border-zinc-100"/>
+<section data-section="danger" class="bg-red-50/50 p-8 rounded-2xl border border-red-100">
+<h3 class="text-sm font-bold text-red-600 uppercase tracking-widest mono mb-6">Опасная зона</h3>
+<div class="flex items-center gap-4">
+<button id="deleteAccountBtn" type="button" class="px-6 py-3 border-2 border-red-200 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors">
+                            Удалить аккаунт
+                        </button>
+<button id="logoutDangerBtn" type="button" class="px-6 py-3 border-2 border-zinc-200 text-zinc-600 rounded-xl font-bold text-sm hover:bg-zinc-100 transition-colors">
+                            Выйти из аккаунта
+                        </button>
+</div>
+<p class="text-[11px] text-red-400 mt-4 leading-relaxed">
+                        Удаление аккаунта приведет к безвозвратной потере всех ваших откликов, настроек и данных профиля. Это действие нельзя отменить.
+                    </p>
+</section>
+</div>
+</div>
+</main>
+<script>
+  // ── Helpers ────────────────────────────────────────────────────────────
+  const json = (url, body, opts = {}) =>
+    fetch(url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+      ...opts,
+    }).then(async (r) => {
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error('http'), { status: r.status, data });
+      return data;
+    });
+
+  function flash(msg, ok = true) {
+    // Lightweight toast — no library, fades after 3s.
+    let host = document.getElementById('flashToast');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'flashToast';
+      host.style.cssText =
+        'position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;';
+      document.body.appendChild(host);
+    }
+    const el = document.createElement('div');
+    el.style.cssText =
+      'pointer-events:auto;padding:10px 14px;border-radius:10px;color:white;font-size:12px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.15);background:' +
+      (ok ? '#16a34a' : '#dc2626');
+    el.textContent = msg;
+    host.appendChild(el);
+    setTimeout(() => {
+      el.style.transition = 'opacity .4s';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 500);
+    }, 2400);
+  }
+
+  // ── Profile + prefs save ───────────────────────────────────────────────
+  // Большая зелёная "Сохранить изменения" внизу секции «Резюме» — главный
+  // сейв для всей секции. Помимо POST /api/settings/profile и
+  // /api/settings/preferences она ещё триггерит сабмит формы
+  // #resumeUrlForm, чтобы ссылка на профиль (hh.ru/LinkedIn) уходила тем
+  // же путём, что и при нажатии маленькой кнопки внутри формы:
+  // POST /api/settings/resume/url → enqueue_resume_parse → пайплайн
+  // pull_and_save_resume_for_user (inline asyncio task, без очереди),
+  // с поллингом /api/me/resume-job и
+  // живым статусом ("Парсится…" → "Готово") прямо на кнопке формы.
+  // Без этого делегирования URL-инпут оставался "пустышкой": флэш
+  // "Изменения сохранены" появлялся, но сама ссылка и парсинг
+  // никуда не уходили.
+  (function () {
+    const btn = document.getElementById('saveProfileAndPrefsBtn');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      let profilePrefsOk = false;
+      try {
+        const profile = {};
+        document.querySelectorAll('[data-profile-field]').forEach((el) => {
+          profile[el.name] = el.value;
+        });
+        const prefs = {};
+        document.querySelectorAll('[data-pref-field]').forEach((el) => {
+          prefs[el.name] = el.value;
+        });
+        prefs.work_formats = Array.from(
+          document.querySelectorAll('[data-work-format]:checked')
+        ).map((el) => el.value);
+        await json('/api/settings/profile', profile);
+        await json('/api/settings/preferences', prefs);
+        profilePrefsOk = true;
+      } catch (e) {
+        flash('Не удалось сохранить', false);
+      } finally {
+        btn.disabled = false;
+      }
+
+      if (!profilePrefsOk) return;
+
+      // Делегируем сейв ссылки + запуск парсера форме — у неё уже есть
+      // вся UX-логика (валидация, поллинг, флэши). Сабмит запускаем
+      // только если поле URL непустое: иначе форма выдаст «Ссылка
+      // очищена» на каждый клик по большой кнопке, даже когда юзер
+      // просто менял имя/стек/локацию и URL вообще не трогал.
+      const resumeForm = document.getElementById('resumeUrlForm');
+      const urlInput = document.getElementById('resumeUrlInput');
+      const urlValue = (urlInput && urlInput.value || '').trim();
+      if (
+        urlValue
+        && resumeForm
+        && typeof resumeForm.requestSubmit === 'function'
+      ) {
+        resumeForm.requestSubmit();
+      } else {
+        flash('Изменения сохранены');
+      }
+    });
+  })();
+
+  // ── Resume URL save + parsing progress ────────────────────────────────
+  //
+  // POST /api/settings/resume/url сразу же ставит фоновую задачу
+  // парсинга резюме (hh.ru) — если URL поддерживается и в сессии
+  // есть hh_phone. После получения job_id поллим
+  // /api/me/resume-job каждые ~1.5с и в самой кнопке показываем
+  // живой статус: «Парсится…» → «Готово» → reload страницы. Любые
+  // не-успешные состояния (нет hh-сессии, неподдерживаемая
+  // платформа, parser failed, timeout) озвучиваем флешем и
+  // возвращаем кнопку в исходное состояние.
+  (function () {
+    const form = document.getElementById('resumeUrlForm');
+    if (!form) return;
+    const input = document.getElementById('resumeUrlInput');
+    const btn = form.querySelector('button[type="submit"]');
+    if (!input || !btn) return;
+    const originalLabel = btn.textContent.trim();
+
+    // Максимум 60 проверок * 1.5с = 90с. Парсинг hh.ru с готовым
+    // session-cookie обычно занимает 5–15 секунд, поэтому 90 хватит
+    // с большим запасом, и при этом не «висит вечно», если воркер
+    // упал/застрял.
+    const POLL_INTERVAL_MS = 1500;
+    const POLL_TIMEOUT_MS = 90_000;
+
+    const STATUS_LABEL = {
+      queued: 'Парсится…',
+      running: 'Парсится…',
+      done: 'Готово',
+      failed: 'Ошибка парсинга',
+    };
+
+    function setBtn(text, disabled) {
+      btn.textContent = text;
+      btn.disabled = !!disabled;
+    }
+
+    function resetBtn() {
+      setBtn(originalLabel, false);
+    }
+
+    async function pollJob(jobId) {
+      const startedAt = Date.now();
+      while (Date.now() - startedAt < POLL_TIMEOUT_MS) {
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+        let data;
+        try {
+          const r = await fetch('/api/me/resume-job', {
+            credentials: 'same-origin',
+          });
+          data = await r.json();
+        } catch (e) {
+          continue;  // сеть моргнула — попробуем снова
+        }
+        if (!data) continue;
+        // Если на сервере уже стартовал свежий job — мы видим его
+        // id != jobId, но статус тот же polling-цикл.
+        const label = STATUS_LABEL[data.status] || 'Парсится…';
+        setBtn(label, true);
+        if (data.status === 'done') return { ok: true };
+        if (data.status === 'failed') {
+          return { ok: false, error: data.error || 'failed' };
+        }
+        if (data.status === null) {
+          // Никаких jobs в БД нет — значит он успел доехать до
+          // ``done`` и был покрыт чем-то другим. Считаем успехом.
+          return { ok: true };
+        }
+      }
+      return { ok: false, error: 'timeout' };
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const url = input.value.trim();
+      setBtn(url ? 'Сохраняем…' : 'Очищаем…', true);
+      let data;
+      try {
+        data = await json('/api/settings/resume/url', { url });
+      } catch (e) {
+        flash(
+          e.data?.detail === 'invalid_url'
+            ? 'Некорректная ссылка'
+            : 'Ошибка сохранения',
+          false,
+        );
+        resetBtn();
+        return;
+      }
+
+      // Если URL пустой — просто очистили, никакого парсинга нет.
+      if (!url || data.reason === 'empty_url') {
+        flash('Ссылка очищена');
+        resetBtn();
+        return;
+      }
+
+      // Платформа не поддерживается / нет hh-сессии — сохранили,
+      // но парсер не стартанул. Объясняем юзеру по-человечески.
+      if (!data.parsing) {
+        if (data.reason === 'no_hh_session') {
+          flash('Ссылка сохранена. Войдите через SMS, чтобы запустить парсинг.', false);
+        } else if (data.reason === 'unsupported_platform') {
+          flash('Ссылка сохранена. Пока умеем парсить только hh.ru — загрузите PDF справа.', false);
+        } else {
+          flash('Ссылка сохранена');
+        }
+        resetBtn();
+        return;
+      }
+
+      // Парсер запущен — крутим поллинг и держим кнопку как
+      // индикатор прогресса.
+      setBtn('Парсится…', true);
+      const res = await pollJob(data.job_id);
+      if (res.ok) {
+        setBtn('Готово', true);
+        flash('Резюме обработано');
+        // Перезагружаемся, чтобы подхватить свежие имя/должность
+        // в шапке и в форме «Личные данные» (их пишет
+        // hydrate_user_prefs_from_resume в воркере).
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        flash(
+          res.error === 'timeout'
+            ? 'Парсер не уложился во время. Попробуйте ещё раз.'
+            : 'Парсер вернул ошибку: ' + res.error,
+          false,
+        );
+        resetBtn();
+      }
+    });
+  })();
+
+  // ── Resume PDF upload + drag&drop ──────────────────────────────────────
+  (function () {
+    const fileInput = document.getElementById('resumeFileInput');
+    const dropzone = document.getElementById('resumeUploadForm');
+    const chooseBtn = document.getElementById('resumeChooseBtn');
+    const pickerBtn = document.getElementById('resumePickerBtn');
+    if (!fileInput || !dropzone) return;
+    const trigger = () => fileInput.click();
+    if (chooseBtn) chooseBtn.addEventListener('click', trigger);
+    if (pickerBtn) pickerBtn.addEventListener('click', trigger);
+    dropzone.addEventListener('click', (event) => {
+      if (event.target.closest('button')) return;
+      trigger();
+    });
+    ['dragover', 'dragenter'].forEach((ev) =>
+      dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-[#16a34a]');
+      })
+    );
+    ['dragleave', 'drop'].forEach((ev) =>
+      dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-[#16a34a]');
+      })
+    );
+    dropzone.addEventListener('drop', (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (file) doUpload(file);
+    });
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) doUpload(file);
+    });
+
+    async function doUpload(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('title', file.name.replace(/\.[^.]+$/, ''));
+      try {
+        const r = await fetch('/api/settings/resume/upload', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: fd,
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.detail || 'http');
+        flash('Резюме загружено: ' + (data.filename || file.name));
+        setTimeout(() => window.location.reload(), 600);
+      } catch (e) {
+        flash('Ошибка загрузки файла', false);
+      }
+    }
+  })();
+
+  // ── Change-photo button (stub) ─────────────────────────────────────────
+  (function () {
+    const btn = document.getElementById('changePhotoBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () =>
+      flash('Загрузка аватара появится в следующем релизе', true)
+    );
+  })();
+
+  // ── Notifications toggles ──────────────────────────────────────────────
+  (function () {
+    const inputs = document.querySelectorAll('[data-notif-key]');
+    if (!inputs.length) return;
+    const tgInput = document.querySelector('[data-notif-key="telegram"]');
+    const tgCard = document.getElementById('telegramLinkCard');
+
+    function buildPayload() {
+      const out = {};
+      inputs.forEach((el) => {
+        out[el.getAttribute('data-notif-key')] = el.checked;
+      });
+      return out;
+    }
+
+    function syncTgCard() {
+      if (!tgInput || !tgCard) return;
+      tgCard.classList.toggle('hidden', !tgInput.checked);
+    }
+
+    inputs.forEach((el) => {
+      el.addEventListener('change', async () => {
+        if (el === tgInput) syncTgCard();
+        try {
+          await json('/api/settings/notifications', buildPayload());
+        } catch (e) {
+          flash('Не удалось сохранить уведомления', false);
+        }
+      });
+    });
+    syncTgCard();
+  })();
+
+  // ── Telegram «Открыть бот»: лениво создаём токен, если его нет ─────────
+  (function () {
+    const link = document.getElementById('telegramOpenBotBtn');
+    if (!link) return;
+    link.addEventListener('click', async (event) => {
+      const href = link.getAttribute('href') || '';
+      if (href.indexOf('start=offerday_') >= 0) return; // уже есть токен
+      event.preventDefault();
+      try {
+        const data = await json('/api/settings/telegram/token', {});
+        const next = 'https://t.me/OfferdayBot?start=offerday_' + data.token;
+        link.setAttribute('href', next);
+        window.open(next, '_blank', 'noopener');
+      } catch (e) {
+        flash('Не удалось открыть бот', false);
+      }
+    });
+  })();
+
+  // ── Language / region selects ──────────────────────────────────────────
+  (function () {
+    const selects = document.querySelectorAll('[data-language-field]');
+    if (!selects.length) return;
+    function buildPayload() {
+      const out = {};
+      selects.forEach((el) => {
+        out[el.getAttribute('data-language-field')] = el.value;
+      });
+      return out;
+    }
+    selects.forEach((el) => {
+      el.addEventListener('change', async () => {
+        try {
+          await json('/api/settings/language', buildPayload());
+        } catch (e) {
+          flash('Не удалось сохранить язык/регион', false);
+        }
+      });
+    });
+  })();
+
+  // ── Security buttons ───────────────────────────────────────────────────
+  (function () {
+    const pwBtn = document.getElementById('changePasswordBtn');
+    const fa = document.getElementById('toggle2faBtn');
+    const sess = document.getElementById('manageSessionsBtn');
+    if (pwBtn) {
+      pwBtn.addEventListener('click', async () => {
+        const pw = prompt('Введите новый пароль (минимум 8 символов):');
+        if (!pw) return;
+        if (pw.length < 8) {
+          flash('Пароль должен быть от 8 символов', false);
+          return;
+        }
+        try {
+          await json('/api/settings/security/password', { new_password: pw });
+          flash('Пароль обновлён');
+        } catch (e) {
+          flash('Не удалось обновить пароль', false);
+        }
+      });
+    }
+    if (fa) {
+      fa.addEventListener('click', async () => {
+        const current = fa.dataset.enabled === '1';
+        try {
+          const data = await json('/api/settings/security/2fa', { enabled: !current });
+          fa.dataset.enabled = data.enabled ? '1' : '0';
+          const badge = document.getElementById('twoFaBadge');
+          if (badge) badge.classList.toggle('hidden', !data.enabled);
+          flash(data.enabled ? '2FA включена' : '2FA выключена');
+        } catch (e) {
+          flash('Не удалось переключить 2FA', false);
+        }
+      });
+    }
+    if (sess) {
+      sess.addEventListener('click', async () => {
+        if (!confirm('Завершить текущую сессию? Вам придётся войти снова.')) return;
+        try {
+          await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+        } catch (e) { /* ignore */ }
+        window.location.href = '/';
+      });
+    }
+  })();
+
+  // ── Danger zone ────────────────────────────────────────────────────────
+  (function () {
+    const del = document.getElementById('deleteAccountBtn');
+    const out = document.getElementById('logoutDangerBtn');
+    if (del) {
+      del.addEventListener('click', async () => {
+        if (!confirm('Удалить аккаунт? Это действие нельзя отменить.')) return;
+        try {
+          await json('/api/settings/account/delete', {});
+          flash('Аккаунт деактивирован');
+          setTimeout(() => (window.location.href = '/'), 800);
+        } catch (e) {
+          flash('Не удалось удалить аккаунт', false);
+        }
+      });
+    }
+    if (out) {
+      out.addEventListener('click', async () => {
+        try {
+          await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+        } catch (e) { /* ignore */ }
+        window.location.href = '/';
+      });
+    }
+  })();
+
+  // ── Platforms (connect / verify / disconnect / cancel) ─────────────────
+  (function () {
+    const cards = document.querySelectorAll('.platform-card');
+    if (!cards.length) return;
+
+    function setStatus(card, status) {
+      card.dataset.status = status;
+      card.classList.remove(
+        'bg-white', 'border', 'border-zinc-200',
+        'bg-red-50/50', 'border-red-200',
+        'bg-amber-50/50', 'border-amber-200',
+        'bg-zinc-50', 'opacity-90'
+      );
+      const subtitle = card.querySelector('[data-status-subtitle]');
+      if (status === 'active') {
+        card.classList.add('bg-white', 'border', 'border-zinc-200');
+        if (subtitle) subtitle.textContent = (subtitle.textContent.split('•')[0] || '').trim() + ' • Активно';
+      } else if (status === 'captcha_required') {
+        card.classList.add('bg-amber-50/50', 'border', 'border-amber-200');
+        if (subtitle) subtitle.textContent = 'Ожидаем код подтверждения';
+      } else if (status === 'error' || status === 'expired') {
+        card.classList.add('bg-red-50/50', 'border', 'border-red-200');
+        if (subtitle) subtitle.textContent = 'Ошибка подключения';
+      } else {
+        card.classList.add('bg-zinc-50', 'border', 'border-zinc-200', 'opacity-90');
+      }
+    }
+
+    function showOtp(card, hint) {
+      const area = card.querySelector('[data-otp-area]');
+      if (!area) return;
+      area.classList.remove('hidden');
+      const input = area.querySelector('[data-otp-input]');
+      if (input) {
+        input.value = '';
+        input.removeAttribute('disabled');
+        input.focus();
+      }
+      const verifyBtn = area.querySelector('[data-action="verify"]');
+      if (verifyBtn) verifyBtn.removeAttribute('disabled');
+      const hintEl = area.querySelector('[data-otp-hint]');
+      if (hintEl && hint) hintEl.textContent = hint;
+    }
+
+    function hideOtp(card) {
+      const area = card.querySelector('[data-otp-area]');
+      if (!area) return;
+      area.classList.add('hidden');
+      const input = area.querySelector('[data-otp-input]');
+      if (input) {
+        input.value = '';
+        input.setAttribute('disabled', 'disabled');
+      }
+      const verifyBtn = area.querySelector('[data-action="verify"]');
+      if (verifyBtn) verifyBtn.setAttribute('disabled', 'disabled');
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener('click', async (event) => {
+        const btn = event.target.closest('[data-action]');
+        if (!btn) return;
+        event.preventDefault();
+        const action = btn.dataset.action;
+        const platform = card.dataset.platform;
+        const name = card.dataset.name || platform;
+
+        if (action === 'connect') {
+          // Сразу показываем OTP-окно с заблокированным полем —
+          // чтобы юзер видел, что мы что-то делаем, пока бэк
+          // 30–60 секунд решает капчу, регистрирует аккаунт на
+          // habr и инициирует смену email. Поле и кнопку
+          // подтверждения активируем, когда бэк ответит, что
+          // код реально ушёл (или дисэйблим карту при ошибке).
+          setStatus(card, 'captcha_required');
+          showOtp(card, 'Готовим подключение ' + name + '…\n'
+              + 'Решаем капчу, регистрируем аккаунт и просим '
+              + name + ' прислать код на вашу основную почту. '
+              + 'Это может занять до минуты.');
+          const otpInput = card.querySelector('[data-otp-input]');
+          const verifyBtn = card.querySelector('[data-action="verify"]');
+          if (otpInput) otpInput.setAttribute('disabled', 'disabled');
+          if (verifyBtn) verifyBtn.setAttribute('disabled', 'disabled');
+
+          try {
+            const data = await json('/api/settings/platforms/connect', { platform });
+
+            // Подсказка под полем ввода кода. Формируется в порядке
+            // приоритета: явный demo_code → flow_type (для habr) →
+            // дефолтная строка для остальных площадок.
+            let hint;
+            if (data.flow_type === 'email_change') {
+              hint = 'Регистрируем новый аккаунт на ' + name + ' и меняем email на ваш основной'
+                   + (data.main_email ? ' (' + data.main_email + ')' : '')
+                   + '. Введите код из письма, которое придёт на основную почту.';
+              if (data.demo_code) hint += ' Демо-код: ' + data.demo_code;
+            } else if (data.flow_type === 'password_recovery') {
+              hint = 'На ' + name + ' уже есть аккаунт по вашему email'
+                   + (data.main_email ? ' (' + data.main_email + ')' : '')
+                   + '. Запустили восстановление пароля — введите код из письма на основную почту.';
+              if (data.demo_code) hint += ' Демо-код: ' + data.demo_code;
+            } else if (data.demo_code) {
+              hint = 'Демо-режим: код ' + data.demo_code;
+            } else {
+              hint = 'Введите код подтверждения, который мы отправили на ' + name + '.';
+            }
+            // Активируем ввод и обновляем подсказку под полем.
+            showOtp(card, hint);
+            flash('Код отправлен (' + name + ')');
+          } catch (e) {
+            // Бэк ответил ошибкой — сворачиваем «pending»-окно и
+            // возвращаем карту в «отключено», чтобы юзер мог
+            // попробовать ещё раз.
+            hideOtp(card);
+            setStatus(card, 'disabled');
+            const detail = e.data?.detail;
+            if (detail === 'main_email_required') {
+              flash('Сначала укажите основной email в резюме — без него площадка не сможет подтвердить владение аккаунтом.', false);
+            } else if (detail === 'temp_email_unavailable') {
+              flash('Сервис временной почты временно недоступен. Попробуйте через минуту.', false);
+            } else {
+              flash('Не удалось отправить код', false);
+            }
+          }
+        } else if (action === 'verify') {
+          const input = card.querySelector('[data-otp-input]');
+          const code = (input?.value || '').trim();
+          if (!/^\d{4,8}$/.test(code)) {
+            flash('Введите код подтверждения (4–8 цифр)', false);
+            return;
+          }
+          try {
+            await json('/api/settings/platforms/verify', { platform, code });
+            setStatus(card, 'active');
+            hideOtp(card);
+            flash(name + ' подключено');
+            setTimeout(() => window.location.reload(), 700);
+          } catch (e) {
+            const detail = e.data?.detail;
+            let msg = 'Не удалось подтвердить';
+            if (detail === 'invalid_code') msg = 'Неверный код';
+            else if (detail === 'no_pending_flow' || detail === 'no_pending_code') {
+              msg = 'Сессия подключения истекла — нажмите «Подключить» ещё раз';
+            }
+            flash(msg, false);
+          }
+        } else if (action === 'disconnect') {
+          if (!confirm('Отключить ' + name + '?')) return;
+          try {
+            await json('/api/settings/platforms/disconnect', { platform });
+            setStatus(card, 'disabled');
+            hideOtp(card);
+            flash(name + ' отключено');
+            setTimeout(() => window.location.reload(), 600);
+          } catch (e) {
+            flash('Не удалось отключить', false);
+          }
+        } else if (action === 'cancel') {
+          hideOtp(card);
+        }
+      });
+    });
+  })();
+</script>
+<script>
+  // ── Доступы для ручного входа: показать/скрыть пароль + копирование ──
+  (function () {
+    // Toggle password visibility
+    const toggleBtn = document.getElementById('platformAccessPasswordToggle');
+    const pwdInput = document.getElementById('platformAccessPassword');
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = pwdInput.type === 'password';
+        pwdInput.type = isHidden ? 'text' : 'password';
+        toggleBtn.textContent = isHidden ? 'Скрыть' : 'Показать';
+      });
+    }
+
+    // Generic copy-to-clipboard for [data-copy-target]
+    document.querySelectorAll('[data-copy-target]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const target = document.getElementById(btn.dataset.copyTarget);
+        const value = (target?.value || '').trim();
+        if (!value) {
+          if (window.flash) flash('Нечего копировать', false);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(value);
+          const original = btn.textContent;
+          btn.textContent = 'Скопировано ✓';
+          setTimeout(() => { btn.textContent = original; }, 1200);
+        } catch (e) {
+          // fallback для http и старых браузеров
+          target.select();
+          try { document.execCommand('copy'); } catch (err) { /* ignore */ }
+        }
+      });
+    });
+  })();
+</script>
+<script>
+        (function () {
+            const btn = document.getElementById('logoutBtn');
+            if (!btn) return;
+            btn.addEventListener('click', async () => {
+                try {
+                    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+                } catch (e) { /* ignore */ }
+                window.location.href = '/';
+            });
+        })();
+    </script></body></html>
