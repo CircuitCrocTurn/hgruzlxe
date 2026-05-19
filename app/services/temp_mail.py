@@ -58,6 +58,12 @@ _CODE_MIN_DIGITS = 4
 _CODE_MAX_DIGITS = 8
 _CODE_RE = re.compile(rf"\b(\d{{{_CODE_MIN_DIGITS},{_CODE_MAX_DIGITS}}})\b")
 
+# Универсальный поиск ссылок в HTML/text-теле письма. Берём как
+# полноценные ``http(s)://``-адреса, так и схожие записи в HTML
+# (``href="https://…"``). Не пытаемся «парсить HTML» — для одного
+# письма-подтверждения достаточно regex'а.
+_LINK_RE = re.compile(r"https?://[^\s\"'<>)]+", re.IGNORECASE)
+
 
 @dataclass(frozen=True, slots=True)
 class TempMailbox:
@@ -305,6 +311,87 @@ async def wait_for_code(
             code = None
         if code:
             return code
+        if asyncio.get_running_loop().time() >= deadline:
+            return None
+        await asyncio.sleep(poll_interval)
+
+
+async def extract_link_from_inbox(
+    email: str,
+    token: str,
+    *,
+    sender_contains: str | None = None,
+    subject_contains: str | None = None,
+    link_contains: str | None = None,
+) -> str | None:
+    """Найти в inbox первое подходящее письмо и вытащить из него URL.
+
+    Логика похожа на :func:`extract_code_from_inbox`, но вместо
+    «вырвать 4–8 цифр» мы достаём http(s)-URL. Используется для
+    площадок, которые шлют ссылку-подтверждение (SuperJob и т.п.)
+    вместо короткого кода.
+
+    Дополнительный фильтр ``link_contains`` — подстрока, которая
+    должна присутствовать в URL (например, ``"superjob.ru"``), чтобы
+    не схватить ссылку на отписку / соцсети из футера письма.
+    """
+    messages = await fetch_inbox(email, token, with_body=True)
+    if not messages:
+        return None
+
+    needle_sender = (sender_contains or "").lower()
+    needle_subject = (subject_contains or "").lower()
+    needle_link = (link_contains or "").lower()
+
+    for msg in messages:
+        sender = (msg.get("from") or msg.get("from_address") or "").lower()
+        subject = (msg.get("subject") or "").lower()
+        if needle_sender and needle_sender not in sender:
+            continue
+        if needle_subject and needle_subject not in subject:
+            continue
+        body_html = msg.get("body_html") or ""
+        body_text = msg.get("body_text") or ""
+        for text in (body_html, body_text):
+            for match in _LINK_RE.finditer(text):
+                url = match.group(0).rstrip(".,);:!?")
+                if needle_link and needle_link not in url.lower():
+                    continue
+                return url
+    return None
+
+
+async def wait_for_link(
+    email: str,
+    token: str,
+    *,
+    sender_contains: str | None = None,
+    subject_contains: str | None = None,
+    link_contains: str | None = None,
+    timeout: float = 120.0,
+    poll_interval: float = 3.0,
+) -> str | None:
+    """Polling-вариант :func:`extract_link_from_inbox`.
+
+    Используется в SuperJob-флоу: после регистрации сервис шлёт
+    ссылку-подтверждение на ``users.temp_email``; мы ждём её, ходим
+    по ней, и только потом меняем пароль через ``/nodejsauth/0/``.
+    """
+    deadline = asyncio.get_running_loop().time() + timeout
+    while True:
+        try:
+            link = await extract_link_from_inbox(
+                email,
+                token,
+                sender_contains=sender_contains,
+                subject_contains=subject_contains,
+                link_contains=link_contains,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[temp_mail] poll inbox failed: %s", exc)
+            link = None
+        if link:
+            return link
         if asyncio.get_running_loop().time() >= deadline:
             return None
         await asyncio.sleep(poll_interval)

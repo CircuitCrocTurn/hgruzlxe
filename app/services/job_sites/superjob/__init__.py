@@ -72,7 +72,9 @@ from app.db.session import session_scope
 from app.services.job_sites.base import BaseJobSiteClient
 from app.services.job_sites.registry import PLATFORM_SUPERJOB
 from app.services.logos import download_company_logo
+from app.services.platform_password import generate_platform_password
 from app.services.realtime import notify_response_change
+from app.services.temp_mail import wait_for_link
 
 
 # ---------------------------------------------------------------------------
@@ -588,10 +590,30 @@ def _resume_input_from_parsed(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class _SuperJobBootstrap:
+    """То, что нужно ``SuperJobClient`` для холодного старта.
+
+    ``resume`` — собранный из ``Resume.parsed_data`` ``ResumeInput``.
+    ``temp_email_token`` — токен от ``temp.coda.ink``, нужен для
+    опроса inbox-а во время регистрации. ``None`` если у юзера ещё
+    не выдан ``temp_email`` (тогда работаем без подтверждения).
+    """
+
+    resume: ResumeInput
+    temp_email_token: str | None
+
+
 async def _load_superjob_resume_input(
     user_id: uuid.UUID,
-) -> ResumeInput | None:
+) -> _SuperJobBootstrap | None:
     """Достать резюме юзера из БД и сконвертировать в ``ResumeInput``.
+
+    Если у юзера выдан ``temp_email`` (см.
+    :func:`app.services.temp_mail.create_temp_email`) — используем его
+    как login на SuperJob (это позволит позже забрать письмо с
+    confirmation-ссылкой через ``users.temp_email_token``). Иначе —
+    fallback на ``Resume.parsed_data['email']`` / ``users.email``.
 
     Возвращает ``None``, если резюме не распарсено или ключевых
     данных недостаточно (см. :func:`_resume_input_from_parsed`).
@@ -613,12 +635,22 @@ async def _load_superjob_resume_input(
         ).scalar_one_or_none()
         parsed: dict[str, Any] = {}
         if resume_row is not None and isinstance(resume_row.parsed_data, dict):
-            parsed = resume_row.parsed_data
-        user_email = user.email if user else None
+            parsed = dict(resume_row.parsed_data)
+        # temp_email имеет приоритет: на него легче забрать письмо.
+        if user.temp_email:
+            parsed["email"] = user.temp_email
+        user_email = user.email
+        temp_email_token = user.temp_email_token
 
-    return _resume_input_from_parsed(
+    resume = _resume_input_from_parsed(
         user_email=user_email,
         parsed=parsed,
+    )
+    if resume is None:
+        return None
+    return _SuperJobBootstrap(
+        resume=resume,
+        temp_email_token=temp_email_token,
     )
 
 
@@ -1798,10 +1830,207 @@ class SuperJobClient(BaseJobSiteClient):
             "link": f"{BASE}/vakansii/-{vacancy_id}.html",
         }
 
+    # ── Подтверждение email + смена пароля ──────────────────────────
+    async def confirm_email_via_link(
+        self,
+        *,
+        email: str,
+        token: str | None,
+    ) -> bool:
+        """Опросить inbox юзера, найти confirmation-ссылку и пройти по ней.
+
+        После ``POST /nodejsaccount/`` SuperJob шлёт письмо вида
+        ``Подтверждение почтового адреса пользователя SuperJob`` с
+        отправителя ``nobody@host.superjob.ru``. В письме — одна
+        ссылка на ``superjob.ru``, по которой нужно перейти один раз,
+        чтобы аккаунт получил ``confirmationStatus.email = true`` и
+        дальнейший PATCH пароля сработал.
+
+        Без ``temp_email_token`` (юзер пришёл с реальным email-ом и у
+        нас нет доступа к его inbox-у) метод штатно возвращает
+        ``False`` — флоу не падает, просто пропускаем подтверждение.
+        Тогда SuperJob оставит ``confirmationStatus.email = false`` и
+        смена пароля по той же сессии всё равно проходит (HAR
+        показывает, что PATCH ``/nodejsauth/0/`` принимается у юзера
+        в любом статусе, пока есть кука сессии после регистрации).
+        """
+        if not token:
+            logger.info(
+                "[superjob] у user=%s нет temp_email_token — "
+                "пропускаем confirmation-link",
+                self.user_id,
+            )
+            return False
+        logger.info(
+            "[superjob] ждём confirmation-ссылку на %s …", email,
+        )
+        link = await wait_for_link(
+            email,
+            token,
+            sender_contains="superjob",
+            subject_contains="superjob",
+            link_contains="superjob.ru",
+            timeout=120.0,
+        )
+        if not link:
+            logger.warning(
+                "[superjob] confirmation-ссылка не пришла на %s за 120с",
+                email,
+            )
+            return False
+
+        logger.info("[superjob] переходим по confirmation-ссылке %s…", link[:80])
+        try:
+            async with self.session.get(
+                link,
+                headers={
+                    "User-Agent": DEFAULT_UA,
+                    "Accept": (
+                        "text/html,application/xhtml+xml,application/xml;"
+                        "q=0.9,*/*;q=0.8"
+                    ),
+                    "Referer": BASE,
+                },
+                allow_redirects=True,
+            ) as r:
+                # 200 — ок. 302/200 после редиректов — ок. Любая 4xx —
+                # подтверждение уже было пройдено / ссылка протухла;
+                # это не повод падать на ровном месте.
+                _ = await r.read()
+                logger.info(
+                    "[superjob] confirmation-ссылка пройдена, status=%s",
+                    r.status,
+                )
+                return r.status < 400
+        except aiohttp.ClientError as exc:
+            logger.warning(
+                "[superjob] confirmation-ссылка не открылась: %s", exc,
+            )
+            return False
+
+    async def _fetch_auth_id(self) -> str | None:
+        """Достать ``authId`` текущей сессии (нужен для PATCH пароля).
+
+        После регистрации в ответе ``POST /nodejsaccount/`` приходит
+        блок ``data.attributes.authId`` — но мы его не сохраняли (раньше
+        был не нужен). Берём свежее значение через GET той же ручки,
+        что SuperJob дёргает на странице ``/user/``.
+        """
+        try:
+            resp = await self._request_json(
+                "GET",
+                "/nodejsauth/0/?include=resetOperation",
+                referer=f"{BASE}/user/",
+                page_type="applicant-profile",
+            )
+        except (VacancyResponseError, aiohttp.ClientError) as exc:
+            logger.warning(
+                "[superjob] GET /nodejsauth/0/ не удался: %s", exc,
+            )
+            return None
+        data = resp.get("data") or {}
+        attrs = data.get("attributes") or {}
+        auth_id = attrs.get("authId")
+        return str(auth_id) if auth_id else None
+
+    async def change_password(self, new_password: str) -> bool:
+        """Сменить пароль на детерминированный ``new_password``.
+
+        Формат запроса воспроизведён из HAR'а (см. user-attached
+        ``+.har``, entry #12)::
+
+            PATCH /jsapi3/0.1/nodejsauth/0/?include=resetOperation
+            {
+              "data": {
+                "id": "0", "type": "nodejsauth",
+                "attributes": {"authId": "<applicant_authId>"},
+                "relationships": {"resetOperation": {"data": {
+                  "id": "<uuid4>", "type": "passwordResetOperation"
+                }}}
+              },
+              "included": [{
+                "id": "<same uuid4>", "type": "passwordResetOperation",
+                "attributes": {
+                  "destination": "email",
+                  "password": "<новый пароль>"
+                }
+              }]
+            }
+
+        Используем ровно тот пароль, что юзер видит в ``/settings``
+        («Доступы для ручного входа») — :func:`generate_platform_password`.
+        """
+        if not self.user_id:
+            logger.warning(
+                "[superjob] change_password: user_id не задан, пропускаем",
+            )
+            return False
+        auth_id = await self._fetch_auth_id()
+        if not auth_id:
+            logger.warning(
+                "[superjob] change_password: не получили authId — "
+                "пароль не сменили",
+            )
+            return False
+
+        op_id = str(uuid.uuid4())
+        body = {
+            "data": {
+                "id": "0",
+                "type": "nodejsauth",
+                "attributes": {"authId": auth_id},
+                "relationships": {
+                    "resetOperation": {
+                        "data": {
+                            "id": op_id,
+                            "type": "passwordResetOperation",
+                        },
+                    },
+                },
+            },
+            "included": [
+                {
+                    "id": op_id,
+                    "type": "passwordResetOperation",
+                    "attributes": {
+                        "destination": "email",
+                        "password": new_password,
+                    },
+                },
+            ],
+        }
+        try:
+            await self._request_json(
+                "PATCH",
+                "/nodejsauth/0/?include=resetOperation",
+                body=body,
+                referer=(
+                    f"{BASE}/user/?profileSettings%5BprofileDataFormId"
+                    f"%5D=APPLICANT_PROFILE_AUTH_PASSWORD_FORM"
+                ),
+                page_type="applicant-profile",
+            )
+        except (VacancyResponseError, aiohttp.ClientError) as exc:
+            logger.warning(
+                "[superjob] PATCH /nodejsauth/0/ не удался: %s", exc,
+            )
+            return False
+        logger.info(
+            "[superjob] пароль на SuperJob сменён "
+            "(authId=%s, len=%d)", auth_id, len(new_password),
+        )
+        return True
+
     # ── Высокоуровневая операция воркера ────────────────────────────
-    async def ensure_registered(self, resume: ResumeInput) -> None:
+    async def ensure_registered(
+        self,
+        resume: ResumeInput,
+        *,
+        temp_email_token: str | None = None,
+    ) -> None:
         """Если ``self.resume_id`` уже есть (поднят из БД) — выходим.
-        Иначе разово регистрируемся и создаём резюме."""
+        Иначе разово регистрируемся, подтверждаем email, ставим
+        детерминированный пароль и создаём резюме."""
         if self.resume_id:
             return
         await self.warmup()
@@ -1811,6 +2040,16 @@ class SuperJobClient(BaseJobSiteClient):
             resume, resolved.work_type_id, resolved.town_id,
         )
         await self.register(resume)
+        # После регистрации SJ шлёт письмо с confirmation-ссылкой.
+        # Идём по ней, чтобы поднять confirmationStatus.email=true.
+        await self.confirm_email_via_link(
+            email=resume.email,
+            token=temp_email_token,
+        )
+        # Ставим тот же пароль, что юзер видит в /settings.
+        if self.user_id:
+            new_password = generate_platform_password(self.user_id)
+            await self.change_password(new_password)
         await self.save_resume(resume, resolved)
         await self.patch_experience(resume, resolved)
         await self.patch_skills(resume)
@@ -1848,8 +2087,8 @@ class SuperJobClient(BaseJobSiteClient):
         cover_letters_generated = 0
         responses: list[dict] = []
 
-        resume_input = await _load_superjob_resume_input(ctx.user_id)
-        if resume_input is None:
+        bootstrap = await _load_superjob_resume_input(ctx.user_id)
+        if bootstrap is None:
             logger.warning(
                 "[superjob] недостаточно данных в резюме — "
                 "отклики невозможны (user=%s)", ctx.user_id,
@@ -1860,13 +2099,17 @@ class SuperJobClient(BaseJobSiteClient):
                 "responses": responses,
                 "error": "missing_resume_data",
             }
+        resume_input = bootstrap.resume
 
         # Email из резюме — стабильный идентификатор для in-memory
         # bridge'а и логина. Подменяем тот, что прислал from_context.
         self.email = resume_input.email
 
         try:
-            await self.ensure_registered(resume_input)
+            await self.ensure_registered(
+                resume_input,
+                temp_email_token=bootstrap.temp_email_token,
+            )
         except SuperJobAuthError as exc:
             logger.warning(
                 "[superjob] регистрация/логин не удались (user=%s): %s",
