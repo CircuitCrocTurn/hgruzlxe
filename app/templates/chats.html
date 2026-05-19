@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Offerday — Чаты</title>
+<link href="/static/fonts/fonts.css" rel="stylesheet"/>
+<link href="/static/icons/phosphor-bold.css" rel="stylesheet"/>
+<link href="/static/icons/phosphor-fill.css" rel="stylesheet"/>
+<style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            --accent: #16a34a;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #09090b;
+        }
+
+        .mono { font-family: var(--font-mono); }
+
+        .sidebar-item.active {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--accent);
+            border-right: 3px solid var(--accent);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e4e4e7;
+            border-radius: 10px;
+        }
+
+        .chat-container {
+            height: calc(100vh - 64px);
+        }
+
+        .message-incoming {
+            border-bottom-left-radius: 4px;
+        }
+        .message-outgoing {
+            border-bottom-right-radius: 4px;
+        }
+    </style>
+<style type="text/css">
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}/*
+! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
+*//*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+.fixed {
+  position: fixed;
+}
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+.bottom-0 {
+  bottom: 0px;
+}
+.left-3 {
+  left: 0.75rem;
+}
+.right-0 {
+  right: 0px;
+}
+.top-1\/2 {
+  top: 50%;
+}
+.z-50 {
+  z-index: 50;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.ml-auto {
+  margin-left: auto;
+}
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.block {
+  display: block;
+}
+.flex {
+  display: flex;
+}
+.h-1\.5 {
+  height: 0.375rem;
+}
+.h-10 {
+  height: 2.5rem;
+}
+.h-12 {
+  height: 3rem;
+}
+.h-3 {
+  height: 0.75rem;
+}
+.h-4 {
+  height: 1rem;
+}
+.h-5 {
+  height: 1.25rem;
+}
+.h-8 {
+  height: 2rem;
+}
+.h-screen {
+  height: 100vh;
+}
+.w-1\.5 {
+  width: 0.375rem;
+}
+.w-10 {
+  width: 2.5rem;
+}
+.w-12 {
+  width: 3rem;
+}
+.w-3 {
+  width: 0.75rem;
+}
+.w-4 {
+  width: 1rem;
+}
+.w-5 {
+  width: 1.25rem;
+}
+.w-64 {
+  width: 16rem;
+}
+.w-8 {
+  width: 2rem;
+}
+.w-80 {
+  width: 20rem;
+}
+.w-full {
+  width: 100%;
+}
+.min-w-0 {
+  min-width: 0px;
+}
+.max-w-\[80\%\] {
+  max-width: 80%;
+}
+.flex-1 {
+  flex: 1 1 0%;
+}
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+.-translate-y-1\/2 {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-end {
+  align-items: flex-end;
+}
+.items-center {
+  align-items: center;
+}
+.items-baseline {
+  align-items: baseline;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-1 {
+  gap: 0.25rem;
+}
+.gap-1\.5 {
+  gap: 0.375rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.gap-3 {
+  gap: 0.75rem;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflow-x-auto {
+  overflow-x: auto;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+.rounded-2xl {
+  border-radius: 1rem;
+}
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+.rounded-\[2px\] {
+  border-radius: 2px;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+.border {
+  border-width: 1px;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-b {
+  border-bottom-width: 1px;
+}
+.border-l-4 {
+  border-left-width: 4px;
+}
+.border-r {
+  border-right-width: 1px;
+}
+.border-t {
+  border-top-width: 1px;
+}
+.border-none {
+  border-style: none;
+}
+.border-\[\#16a34a\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(22 163 74 / var(--tw-border-opacity, 1));
+}
+.border-emerald-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 250 229 / var(--tw-border-opacity, 1));
+}
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+.border-zinc-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
+}
+.border-zinc-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(228 228 231 / var(--tw-border-opacity, 1));
+}
+.bg-\[\#16a34a\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
+}
+.bg-blue-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
+}
+.bg-emerald-50\/50 {
+  background-color: rgb(236 253 245 / 0.5);
+}
+.bg-emerald-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(16 185 129 / var(--tw-bg-opacity, 1));
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-50\/20 {
+  background-color: rgb(250 250 250 / 0.2);
+}
+.bg-zinc-50\/30 {
+  background-color: rgb(250 250 250 / 0.3);
+}
+.bg-zinc-50\/50 {
+  background-color: rgb(250 250 250 / 0.5);
+}
+.bg-zinc-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(39 39 42 / var(--tw-bg-opacity, 1));
+}
+.bg-zinc-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.p-2\.5 {
+  padding: 0.625rem;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+.p-4 {
+  padding: 1rem;
+}
+.p-5 {
+  padding: 1.25rem;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.p-8 {
+  padding: 2rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+.pl-10 {
+  padding-left: 2.5rem;
+}
+.pr-4 {
+  padding-right: 1rem;
+}
+.text-right {
+  text-align: right;
+}
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.text-\[10px\] {
+  font-size: 10px;
+}
+.text-\[11px\] {
+  font-size: 11px;
+}
+.text-\[12px\] {
+  font-size: 12px;
+}
+.text-\[9px\] {
+  font-size: 9px;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-extrabold {
+  font-weight: 800;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.leading-relaxed {
+  line-height: 1.625;
+}
+.leading-tight {
+  line-height: 1.25;
+}
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+.text-\[\#16a34a\] {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+.text-emerald-200 {
+  --tw-text-opacity: 1;
+  color: rgb(167 243 208 / var(--tw-text-opacity, 1));
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+.text-yellow-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 224 71 / var(--tw-text-opacity, 1));
+}
+.text-zinc-400 {
+  --tw-text-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-text-opacity, 1));
+}
+.text-zinc-500 {
+  --tw-text-opacity: 1;
+  color: rgb(113 113 122 / var(--tw-text-opacity, 1));
+}
+.text-zinc-600 {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.text-zinc-800 {
+  --tw-text-opacity: 1;
+  color: rgb(39 39 42 / var(--tw-text-opacity, 1));
+}
+.opacity-70 {
+  opacity: 0.7;
+}
+.opacity-80 {
+  opacity: 0.8;
+}
+.opacity-90 {
+  opacity: 0.9;
+}
+.shadow-md {
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-sm {
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-emerald-200 {
+  --tw-shadow-color: #a7f3d0;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.hover\:bg-emerald-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-white:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+.hover\:bg-zinc-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+.hover\:text-zinc-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
+.focus\:border-\[\#16a34a\]:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(22 163 74 / var(--tw-border-opacity, 1));
+}
+.focus\:outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+.focus\:ring-\[\#16a34a\]\/20:focus {
+  --tw-ring-color: rgb(22 163 74 / 0.2);
+}* {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  .hidden {
+  display: none !important;
+}
+
+/* Quota widget — pixel-identical on /dashboard, /responses, /chats,
+   /settings, /tariffs.  Styled directly so it doesn't depend on which
+   Tailwind utilities each page happens to ship.  ---------------------*/
+.quota-widget { background: #fafafa; border-radius: 12px; padding: 16px; }
+.quota-widget + .profile-card { margin-top: 12px; }
+.qw-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+.qw-numbers {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+.qw-num { font-size: 24px; font-weight: 900; color: #18181b; }
+.qw-sep { font-size: 22px; font-weight: 700; color: #d4d4d8; padding: 0 2px; }
+.qw-den { font-size: 24px; font-weight: 700; color: #a1a1aa; }
+.qw-bar-track {
+    height: 6px;
+    width: 100%;
+    background: #e4e4e7;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.qw-bar-fill {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 9999px;
+    transition: width 0.2s ease;
+}
+.qw-status { font-size: 11px; color: #71717a; line-height: 1.3; }
+
+/* ── Chats page extras (filter buttons, status indicator, resizer). */
+.grid { display: grid; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.text-center { text-align: center; }
+.shrink-0 { flex-shrink: 0; }
+.min-w-\[20px\] { min-width: 20px; }
+.h-5 { height: 1.25rem; }
+.px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+.leading-none { line-height: 1; }
+.text-\[11px\] { font-size: 11px; }
+.w-2 { width: 0.5rem; }
+.h-2 { height: 0.5rem; }
+.gap-2 { gap: 0.5rem; }
+.text-rose-600 { color: rgb(225 29 72); }
+.text-amber-600 { color: rgb(217 119 6); }
+
+/* Цифровой бейдж непрочитанных. Делаем кружок с явным
+   line-height = высота, чтобы цифры в нём стояли строго по центру
+   независимо от шрифтового baseline. `tabular-nums` стабилизирует
+   ширину при сменах 1/2 → 99/99+. */
+.unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 20px;
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-align: center;
+    box-sizing: content-box;
+}
+.unread-badge.is-overflow {
+    min-width: 26px;
+    padding: 0 7px;
+}
+
+/* Бейдж статуса диалога. Без фоновой заливки и без бордюра —
+   просто цветной текст. Цвет — по модификатору
+   ``.is-pending`` / ``.is-refusal`` / ``.is-interested``. */
+.chat-status-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+    background: transparent;
+    padding: 0;
+    color: rgb(63 63 70); /* zinc-700, дефолт */
+}
+.chat-status-badge.is-pending {
+    color: rgb(202 138 4); /* yellow-600, насыщенный жёлтый */
+}
+.chat-status-badge.is-refusal {
+    color: rgb(185 28 28); /* red-700 */
+}
+.chat-status-badge.is-interested {
+    color: rgb(21 128 61); /* green-700 */
+}
+
+/* Когда включён фильтр «Актуальные», в списке остаются только
+   ``interested`` чаты — бейдж становится избыточен, скрываем. */
+[data-chats-list][data-filter="relevant"] .chat-status-badge {
+    display: none;
+}
+
+/* Resizable splitter between chat list and chat panel. */
+.chats-resizer {
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    flex: 0 0 6px;
+    position: relative;
+    transition: background-color 120ms ease;
+    z-index: 1;
+}
+.chats-resizer:hover,
+.chats-resizer:focus,
+.chats-resizer.is-dragging {
+    background: rgba(22, 163, 74, 0.18);
+    outline: none;
+}
+.chats-resizer::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 32px;
+    background: rgb(228 228 231);
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+}
+.chats-resizer:hover::after,
+.chats-resizer:focus::after,
+.chats-resizer.is-dragging::after {
+    background: rgb(22 163 74);
+}
+body.chats-resizing,
+body.chats-resizing * {
+    user-select: none !important;
+    cursor: col-resize !important;
+}
+.space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+.gap-1\.5 { gap: 0.375rem; }
+.gap-2 { gap: 0.5rem; }
+.bg-zinc-300 { background-color: rgb(212 212 216); }
+.bg-amber-400 { background-color: rgb(251 191 36); }
+.bg-rose-500 { background-color: rgb(244 63 94); }
+.text-zinc-900 { color: rgb(24 24 27); }
+.hover\:text-zinc-900:hover { color: rgb(24 24 27); }
+.hover\:border-zinc-300:hover { border-color: rgb(212 212 216); }
+.disabled\:opacity-50:disabled { opacity: 0.5; }
+.disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+.no-underline { text-decoration: none; }
+.text-inherit { color: inherit; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
+</style></head>
+<body class="flex overflow-hidden w-full h-screen">
+<aside class="w-64 h-screen bg-white border-r border-zinc-200 flex flex-col z-50 shrink-0">
+<div class="px-6 py-6 flex items-center gap-2" style="height:64px;">
+<div class="bg-[#16a34a] rounded-sm shrink-0" style="width:8px;height:8px;"></div>
+<span class="font-extrabold" style="font-size:16px;line-height:24px;letter-spacing:-0.025em;">OFFERDAY</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/dashboard"><i class="ph-bold ph-chart-bar text-lg"></i> Статистика</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/responses"><i class="ph-bold ph-paper-plane-tilt text-lg"></i> Отклики</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-zinc-900 text-white" href="/chats"><i class="ph-bold ph-chats-circle text-lg"></i> Чаты</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/settings"><i class="ph-bold ph-gear-six text-lg"></i> Настройки</a>
+<a class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900" href="/tariffs"><i class="ph-bold ph-credit-card text-lg"></i> Тарифы</a>
+</nav>
+<div class="p-4 space-y-3 border-t border-zinc-100">
+<div class="quota-widget" data-quota-widget>
+<div class="qw-label">Отклики сегодня</div>
+<div class="qw-numbers">
+<span class="qw-num">{{ responses_used_today|default(0) }}</span>
+<span class="qw-sep">/</span>
+<span class="qw-den">{{ responses_daily_limit_label|default('∞') }}</span>
+</div>
+{% if responses_daily_limit and responses_daily_limit > 0 %}
+{% set quota_pct = ((responses_used_today | default(0)) * 100 / responses_daily_limit) | round(0, 'floor') | int %}
+{% if quota_pct > 100 %}{% set quota_pct = 100 %}{% endif %}
+<div class="qw-bar-track">
+<div class="qw-bar-fill" style="width: {{ quota_pct }}%;"></div>
+</div>
+{% endif %}
+<div class="qw-status">{{ responses_quota_status|default('Лимит обновляется в 00:00.') }}</div>
+</div>
+<a class="profile-card flex items-center gap-3 px-2 py-2 -mx-2 rounded-lg hover:bg-zinc-100 transition-colors group" href="/settings" title="Открыть настройки">
+<div class="rounded-full bg-zinc-900 text-white font-extrabold flex items-center justify-center shrink-0" style="width:36px;height:36px;font-size:12px;line-height:1;">{{ (user.first_name or '?')[0] }}{{ (user.last_name or '')[:1] }}</div>
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold truncate text-zinc-900">{{ user.first_name|default('') }} {{ (user.last_name or '')[:1] }}{{ '.' if user.last_name else '' }}</div>
+<div class="text-[10px] text-zinc-400 truncate">{{ user.title|default('Кандидат') }}</div>
+</div>
+<i class="ph-bold ph-caret-right text-zinc-300 group-hover:text-zinc-500 transition-colors text-base"></i>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col p-8 overflow-hidden">
+<header class="flex justify-between items-end mb-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Чаты</h1>
+<p class="text-zinc-500 mt-1">Общайтесь с рекрутерами напрямую.</p>
+</div>
+</header>
+<div class="bg-white border border-zinc-200 rounded-3xl shadow-sm flex-1 flex overflow-hidden" data-chats-root>
+<div class="border-r border-zinc-100 flex flex-col bg-zinc-50/30 shrink-0" style="width: 320px;" data-chats-sidebar>
+<div class="p-5 border-b border-zinc-100 space-y-3">
+<div class="relative">
+<i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"></i>
+<input class="w-full bg-white border border-zinc-200 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#16a34a] transition-all" placeholder="Поиск диалогов..." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button type="button" data-chats-filter="all" class="chats-filter-btn w-full px-3 py-1.5 rounded-lg text-xs font-bold text-center transition-all bg-zinc-900 text-white inline-flex items-center justify-center gap-1.5"><span>Все чаты</span><span class="chats-filter-count" data-filter-count="all">{{ chat_counts.all | default(0) }}</span></button>
+<button type="button" data-chats-filter="relevant" class="chats-filter-btn w-full px-3 py-1.5 rounded-lg text-xs font-bold text-center transition-all bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900 inline-flex items-center justify-center gap-1.5"><span>Актуальные</span><span class="chats-filter-count" data-filter-count="relevant">{{ chat_counts.relevant | default(0) }}</span></button>
+<button type="button" data-chats-filter="refusal" class="chats-filter-btn w-full px-3 py-1.5 rounded-lg text-xs font-bold text-center transition-all bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900 inline-flex items-center justify-center gap-1.5"><span>Отказы</span><span class="chats-filter-count" data-filter-count="refusal">{{ chat_counts.refusal | default(0) }}</span></button>
+<button type="button" data-chats-filter="pending" class="chats-filter-btn w-full px-3 py-1.5 rounded-lg text-xs font-bold text-center transition-all bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900 inline-flex items-center justify-center gap-1.5"><span>В ожидании</span><span class="chats-filter-count" data-filter-count="pending">{{ chat_counts.pending | default(0) }}</span></button>
+</div>
+<div class="text-xs text-zinc-500 flex items-center gap-2 min-w-0" data-chats-status>
+<span class="inline-block w-2 h-2 rounded-full bg-zinc-300 shrink-0" data-chats-status-dot></span>
+<span class="truncate" data-chats-status-text>обновлено только что</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar" data-chats-list>{% for c in chats %}
+<a href="{{ c.href }}" data-chat-id="{{ c.id }}" data-chat-relevant="{{ '1' if c.is_relevant else '0' }}" data-chat-status="{{ c.status_kind or '' }}" class="chat-item block p-4 flex items-start gap-4 cursor-pointer hover:bg-white transition-colors no-underline text-inherit{% if c.is_active %} bg-white border-l-4 border-[#16a34a]{% endif %}">
+<div class="w-12 h-12 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-sm shrink-0">{{ c.initials }}</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline gap-2 mb-0.5">
+<h4 class="text-sm font-bold truncate">{{ c.title }}</h4>
+<div class="flex items-center gap-1.5 shrink-0">
+<span class="text-[10px] text-zinc-400 mono chat-time" data-iso="{{ c.last_message_at_iso }}">{{ c.last_message_at }}</span>
+{% if c.unread_messages and c.unread_messages > 0 %}<span class="unread-badge {% if c.unread_messages > 99 %}is-overflow{% endif %}">{% if c.unread_messages > 99 %}99+{% else %}{{ c.unread_messages }}{% endif %}</span>{% endif %}
+</div>
+</div>
+<div class="flex justify-between items-center gap-2">
+<span class="text-xs text-zinc-500 truncate min-w-0">{{ c.subtitle }}</span>
+<span class="chat-status-badge shrink-0 {{ c.status_css or c.preview_css or '' }}">{{ c.status_label or c.preview_label }}</span>
+</div>
+{% if (c.status_kind or c.preview_kind) == 'interested' and c.last_message_preview %}
+<p class="text-xs text-zinc-400 truncate mt-1">{{ c.last_message_preview }}</p>
+{% endif %}
+</div>
+</a>
+{% else %}
+<div class="p-8 text-center text-xs text-zinc-400" data-chats-empty>0 чатов</div>
+{% endfor %}</div>
+</div>
+<div class="chats-resizer" data-chats-resizer role="separator" aria-orientation="vertical" tabindex="0" title="Потяните, чтобы изменить ширину"></div>
+<div class="flex-1 flex flex-col bg-white min-w-0" data-chats-main>
+{% if active_chat %}
+<div class="px-6 py-4 border-b border-zinc-100 flex justify-between items-center" data-chat-header>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-xs" data-chat-header-initials>{{ active_chat.initials }}</div>
+<div>
+<div class="text-sm font-bold" data-chat-header-title>{{ active_chat.contact_name }}</div>
+<div class="flex items-center gap-1.5">
+<span class="text-[11px] text-zinc-500" data-chat-header-subtitle>{{ active_chat.subtitle }}</span>
+</div>
+</div>
+</div>
+</div>
+{% endif %}
+<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/20" data-chat-messages>{% if active_chat %}
+{% for m in active_chat.messages %}
+{% if m.outgoing %}
+<div class="flex flex-row-reverse gap-3 max-w-[80%] ml-auto">
+<div class="w-8 h-8 rounded-full bg-zinc-200 flex-shrink-0 flex items-center justify-center font-bold text-[10px] border-2 border-white shadow-sm">{{ m.author_initials }}</div>
+<div class="bg-[#16a34a] text-white p-4 rounded-2xl message-outgoing shadow-sm">
+<p class="text-sm leading-relaxed">{{ m.text }}</p>
+<div class="flex justify-end items-center gap-1 mt-2">
+<span class="text-[9px] opacity-70 mono uppercase message-time" data-iso="{{ m.sent_at_iso }}">{{ m.sent_at }}</span>
+</div>
+</div>
+</div>
+{% else %}
+<div class="flex gap-3 max-w-[80%]">
+<div class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">{{ m.author_initials }}</div>
+<div class="bg-white border border-zinc-200 p-4 rounded-2xl message-incoming shadow-sm">
+<p class="text-sm leading-relaxed text-zinc-800">{{ m.text }}</p>
+<span class="block mt-2 text-[9px] text-zinc-400 mono text-right uppercase message-time" data-iso="{{ m.sent_at_iso }}">{{ m.sent_at }}</span>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+{% else %}
+<div class="h-full flex items-center justify-center text-center text-xs text-zinc-400">Выберите диалог слева</div>
+{% endif %}</div>
+{% if active_chat %}
+<div class="p-6 border-t border-zinc-100">
+<form id="chatComposer" class="flex items-center gap-3"{% if active_chat %} data-chat-uuid="{{ active_chat.id }}"{% endif %}>
+<button type="button" id="chatAttachBtn" class="p-2.5 bg-zinc-100 text-zinc-500 rounded-xl hover:bg-zinc-200 transition-colors">
+<i class="ph-bold ph-paperclip text-lg"></i>
+</button>
+<div class="flex-1 relative">
+<input id="chatComposerInput" class="w-full bg-zinc-50 border-none rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20" placeholder="Напишите сообщение..." type="text"/>
+</div>
+<button type="submit" class="bg-[#16a34a] text-white p-3 rounded-xl hover:opacity-90 shadow-md shadow-emerald-200 transition-all">
+<i class="ph-bold ph-paper-plane-right text-lg"></i>
+</button>
+</form>
+</div>
+{% endif %}
+</div>
+</div>
+<script>
+  // ── Локальная TZ (если у юзера не Москва) ─────────────────────
+  // Бэкенд отдаёт читабельную строку времени в МСК, плюс data-iso
+  // в UTC. Если у юзера в браузере другая TZ — поверх перерисовываем
+  // и время в списке чатов, и время каждого сообщения. Хелпер живёт
+  // на уровне script-блока (не внутри IIFE), потому что его дёргают
+  // и chatsPage(), и AJAX-навигация при пере-рендере правой панели.
+  function relocalizeChatsTimes(root) {
+    try {
+      const TZ_OFFSET_MSK_MIN = -180;
+      if (new Date().getTimezoneOffset() === TZ_OFFSET_MSK_MIN) return;
+      const fmtList = new Intl.DateTimeFormat(undefined, {
+        hour: '2-digit', minute: '2-digit', hour12: false,
+      });
+      const fmtListDate = new Intl.DateTimeFormat(undefined, {
+        day: '2-digit', month: '2-digit',
+      });
+      const today = new Date();
+      (root || document).querySelectorAll('.chat-time[data-iso]').forEach((n) => {
+        const iso = n.getAttribute('data-iso');
+        if (!iso) return;
+        const d = new Date(iso);
+        if (isNaN(d)) return;
+        if (d.toDateString() === today.toDateString()) {
+          n.textContent = fmtList.format(d);
+        } else {
+          n.textContent = fmtListDate.format(d).replace(/\//g, '.');
+        }
+      });
+      (root || document).querySelectorAll('.message-time[data-iso]').forEach((n) => {
+        const iso = n.getAttribute('data-iso');
+        if (!iso) return;
+        const d = new Date(iso);
+        if (isNaN(d)) return;
+        n.textContent = fmtList.format(d);
+      });
+    } catch (_) {}
+  }
+
+  // ── Сохранение скролла списка чатов между переходами ───────────
+  // Раньше клик по чату был полноценным переходом на /chats?id=<x>:
+  // без sessionStorage список после рендера прыгал наверх. Сейчас
+  // навигация AJAX'ом (см. bindChatListNav), но прямой URL и refresh
+  // всё ещё могут случиться — поэтому хранилище оставляем.
+  const SCROLL_KEY = 'offerday_chats_list_scroll';
+  function saveListScroll() {
+    const list = document.querySelector('[data-chats-list]');
+    if (!list) return;
+    try { window.sessionStorage.setItem(SCROLL_KEY, String(list.scrollTop)); } catch (_) {}
+  }
+
+  // ── AJAX-навигация по чатам (без full page reload) ──────────────
+  // Клик по чату теперь не уводит на /chats?id=<x>: вместо этого
+  // дёргаем GET /api/chats/<id>, забираем готовый active_chat (с
+  // полной историей из hh.ru chat_data) и руками рендерим правую
+  // панель. URL обновляем через history.pushState, фон-синк делает
+  // своё дело отдельно (chatsPage()). Это убирает «кружочек обновления»
+  // у вкладки браузера и даёт мгновенный отклик.
+  //
+  // Параллельно тут же:
+  //   * оптимистично убираем unread-бейдж и подсветку активного чата;
+  //   * слаём POST /api/chats/<id>/read fire-and-forget — чтобы hh.ru
+  //     тоже отметила чат прочитанным (БД к этому моменту уже
+  //     сброшена в GET /api/chats/<id>).
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (m) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[m]));
+  }
+
+  function renderActiveChat(active) {
+    const main = document.querySelector('[data-chats-main]');
+    if (!main) return;
+    // Сохраняем (и пересоздаём) resizer'у соседа — он привязан к чату
+    // через DOM-структуру, его трогать не надо.
+    if (!active) {
+      main.innerHTML = '<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/20" data-chat-messages><div class="h-full flex items-center justify-center text-center text-xs text-zinc-400">Выберите диалог слева</div></div>';
+      return;
+    }
+    const headerHtml =
+      `<div class="px-6 py-4 border-b border-zinc-100 flex justify-between items-center" data-chat-header>`
+      + `<div class="flex items-center gap-3">`
+      + `<div class="w-10 h-10 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-xs" data-chat-header-initials>${escHtml(active.initials || '')}</div>`
+      + `<div>`
+      + `<div class="text-sm font-bold" data-chat-header-title>${escHtml(active.contact_name || '')}</div>`
+      + `<div class="flex items-center gap-1.5">`
+      + `<span class="text-[11px] text-zinc-500" data-chat-header-subtitle>${escHtml(active.subtitle || '')}</span>`
+      + `</div></div></div></div>`;
+    const msgs = (active.messages || []).map((m) => {
+      if (m.outgoing) {
+        return (
+          `<div class="flex flex-row-reverse gap-3 max-w-[80%] ml-auto">`
+          + `<div class="w-8 h-8 rounded-full bg-zinc-200 flex-shrink-0 flex items-center justify-center font-bold text-[10px] border-2 border-white shadow-sm">${escHtml(m.author_initials || 'Я')}</div>`
+          + `<div class="bg-[#16a34a] text-white p-4 rounded-2xl message-outgoing shadow-sm">`
+          + `<p class="text-sm leading-relaxed">${escHtml(m.text || '')}</p>`
+          + `<div class="flex justify-end items-center gap-1 mt-2">`
+          + `<span class="text-[9px] opacity-70 mono uppercase message-time" data-iso="${escHtml(m.sent_at_iso || '')}">${escHtml(m.sent_at || '')}</span>`
+          + `</div></div></div>`
+        );
+      }
+      return (
+        `<div class="flex gap-3 max-w-[80%]">`
+        + `<div class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">${escHtml(m.author_initials || '')}</div>`
+        + `<div class="bg-white border border-zinc-200 p-4 rounded-2xl message-incoming shadow-sm">`
+        + `<p class="text-sm leading-relaxed text-zinc-800">${escHtml(m.text || '')}</p>`
+        + `<span class="block mt-2 text-[9px] text-zinc-400 mono text-right uppercase message-time" data-iso="${escHtml(m.sent_at_iso || '')}">${escHtml(m.sent_at || '')}</span>`
+        + `</div></div>`
+      );
+    }).join('');
+    const messagesHtml =
+      `<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/20" data-chat-messages>`
+      + (msgs || '<div class="h-full flex items-center justify-center text-center text-xs text-zinc-400">Сообщений пока нет</div>')
+      + `</div>`;
+    const composerHtml =
+      `<div class="p-6 border-t border-zinc-100">`
+      + `<form id="chatComposer" class="flex items-center gap-3" data-chat-uuid="${escHtml(active.id)}">`
+      + `<button type="button" id="chatAttachBtn" class="p-2.5 bg-zinc-100 text-zinc-500 rounded-xl hover:bg-zinc-200 transition-colors">`
+      + `<i class="ph-bold ph-paperclip text-lg"></i>`
+      + `</button>`
+      + `<div class="flex-1 relative">`
+      + `<input id="chatComposerInput" class="w-full bg-zinc-50 border-none rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20" placeholder="Напишите сообщение..." type="text"/>`
+      + `</div>`
+      + `<button type="submit" class="bg-[#16a34a] text-white p-3 rounded-xl hover:opacity-90 shadow-md shadow-emerald-200 transition-all">`
+      + `<i class="ph-bold ph-paper-plane-right text-lg"></i>`
+      + `</button></form></div>`;
+    main.innerHTML = headerHtml + messagesHtml + composerHtml;
+    // Перерисовали композер — заново подвешиваем submit-listener.
+    bindComposer();
+    // Локальная TZ — перерисуем время сообщений и/или заголовков.
+    try { relocalizeChatsTimes(main); } catch (_) {}
+    // Скроллим переписку вниз.
+    const list = main.querySelector('[data-chat-messages]');
+    if (list) list.scrollTop = list.scrollHeight;
+  }
+
+  function updateActiveHighlight(id) {
+    const items = document.querySelectorAll('[data-chats-list] .chat-item');
+    items.forEach((el) => {
+      const isActive = el.getAttribute('data-chat-id') === id;
+      el.classList.toggle('bg-white', isActive);
+      el.classList.toggle('border-l-4', isActive);
+      el.classList.toggle('border-[#16a34a]', isActive);
+    });
+  }
+
+  // ── Refresh active chat from hh.ru in background ───────────────
+  // Дёргает POST /api/chats/<id>/refresh — оно ходит на hh.ru за
+  // полной историей и апсёртит её в БД. Если что-то новое подъехало
+  // — перерисовываем правую панель. Делаем in-place, без блокировок.
+  let refreshingChatId = null;
+  function refreshActiveChat(id) {
+    if (!id || refreshingChatId === id) return;
+    refreshingChatId = id;
+    fetch('/api/chats/' + encodeURIComponent(id) + '/refresh', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' },
+    })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (refreshingChatId !== id) return;
+        if (!data || !data.active_chat) return;
+        // Перерисовываем только если юзер всё ещё на этом чате.
+        const composer = document.getElementById('chatComposer');
+        if (!composer || composer.getAttribute('data-chat-uuid') !== id) return;
+        // Сравним длину сообщений — если ничего не подъехало, не дёргаем DOM.
+        const existing = document.querySelectorAll('[data-chat-messages] > div').length;
+        if ((data.active_chat.messages || []).length <= existing) return;
+        renderActiveChat(data.active_chat);
+      })
+      .catch(() => { /* тихо */ })
+      .finally(() => { if (refreshingChatId === id) refreshingChatId = null; });
+  }
+
+  let loadingChatId = null;
+  function loadChat(id, opts) {
+    if (!id || loadingChatId === id) return;
+    loadingChatId = id;
+    // Оптимистично: бейдж прочитан и подсветка активного.
+    const a = document.querySelector('[data-chats-list] .chat-item[data-chat-id="' + CSS.escape(id) + '"]');
+    if (a) {
+      const badge = a.querySelector('.unread-badge');
+      if (badge) { try { badge.remove(); } catch (_) {} }
+    }
+    updateActiveHighlight(id);
+    if (!opts || !opts.skipPushState) {
+      try {
+        const url = '/chats?id=' + encodeURIComponent(id);
+        window.history.pushState({ chatId: id }, '', url);
+      } catch (_) { /* ignore */ }
+    }
+    // Фаза 1: быстрый рендер из БД (~50ms).
+    fetch('/api/chats/' + encodeURIComponent(id), {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' },
+    })
+      .then((r) => r.ok ? r.json() : Promise.reject(r))
+      .then((data) => {
+        if (loadingChatId !== id) return; // юзер уже переключился
+        if (data && data.active_chat) renderActiveChat(data.active_chat);
+        // Фаза 2: запускаем фоном — догрузить свежее с hh.ru.
+        refreshActiveChat(id);
+      })
+      .catch(() => { /* тихо: оставим текущий контент */ })
+      .finally(() => { if (loadingChatId === id) loadingChatId = null; });
+  }
+
+  (function bindChatListNav() {
+    const list = document.querySelector('[data-chats-list]');
+    if (!list) return;
+    list.addEventListener('click', (ev) => {
+      const a = ev.target.closest('.chat-item');
+      if (!a) return;
+      // Только обычные ЛКМ-клики без модификаторов — иначе пускаем
+      // браузерный flow (новая вкладка / save link).
+      if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+      ev.preventDefault();
+      saveListScroll();
+      const id = a.getAttribute('data-chat-id');
+      if (!id) return;
+      loadChat(id);
+    });
+  })();
+
+  // Back / forward — синхронизируем правую панель с новым URL.
+  window.addEventListener('popstate', () => {
+    const id = (function () {
+      try {
+        const u = new URL(window.location.href);
+        return u.searchParams.get('id');
+      } catch (_) { return null; }
+    })();
+    if (id) {
+      updateActiveHighlight(id);
+      loadChat(id, { skipPushState: true });
+    } else {
+      updateActiveHighlight(null);
+      renderActiveChat(null);
+    }
+  });
+
+  // ── Composer biding (выносится в функцию, чтобы переподписаться
+  //    при пере-рендере правой панели через AJAX-навигацию).
+  function bindComposer() {
+    const form = document.getElementById('chatComposer');
+    if (!form || form.__bound) return;
+    form.__bound = true;
+    const input = document.getElementById('chatComposerInput');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const messagesList = document.querySelector('[data-chat-messages]');
+    const chatUuid = form.getAttribute('data-chat-uuid');
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
+
+    function appendOutgoingMessage(text, sentAtISO) {
+      if (!messagesList) return;
+      const time = new Date(sentAtISO || Date.now());
+      const hh = String(time.getHours()).padStart(2, '0');
+      const mm = String(time.getMinutes()).padStart(2, '0');
+      const wrap = document.createElement('div');
+      wrap.className = 'flex flex-row-reverse gap-3 max-w-[80%] ml-auto';
+      wrap.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-zinc-200 flex-shrink-0 flex items-center justify-center font-bold text-[10px] border-2 border-white shadow-sm">Я</div>
+        <div class="bg-[#16a34a] text-white p-4 rounded-2xl message-outgoing shadow-sm">
+          <p class="text-sm leading-relaxed">${esc(text)}</p>
+          <div class="flex justify-end items-center gap-1 mt-2">
+            <span class="text-[9px] opacity-70 mono uppercase message-time" data-iso="${esc((sentAtISO || time.toISOString()))}">${hh}:${mm}</span>
+          </div>
+        </div>
+      `;
+      messagesList.appendChild(wrap);
+      messagesList.scrollTop = messagesList.scrollHeight;
+    }
+
+    function showSendError(msg) {
+      if (!input) return;
+      const old = form.querySelector('[data-send-error]');
+      if (old) old.remove();
+      const div = document.createElement('div');
+      div.setAttribute('data-send-error', '');
+      div.className = 'text-[11px] text-rose-600 mt-1';
+      div.textContent = msg;
+      form.appendChild(div);
+      setTimeout(() => { try { div.remove(); } catch (_) {} }, 6000);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!input) return;
+      const text = (input.value || '').trim();
+      if (!text || !chatUuid) return;
+      if (submitBtn) submitBtn.disabled = true;
+      input.disabled = true;
+      try {
+        const r = await fetch('/api/chats/' + encodeURIComponent(chatUuid) + '/messages', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (!r.ok) {
+          let detail = null;
+          try { detail = await r.json(); } catch (_) {}
+          const msg = (detail && detail.detail && detail.detail.message)
+            || ('Не удалось отправить (HTTP ' + r.status + ')');
+          showSendError(msg);
+          return;
+        }
+        const data = await r.json();
+        const m = data && data.message;
+        appendOutgoingMessage(m && m.text || text, m && m.sent_at);
+        input.value = '';
+      } catch (e) {
+        showSendError('Нет связи с сервером.');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        input.disabled = false;
+        input.focus();
+      }
+    });
+  }
+  bindComposer();
+
+  // ── Mark chat read + refresh history on direct URL hit ─────────
+  // Если юзер пришёл по прямой ссылке /chats?id=<x> (закладка,
+  // вставленный URL, рефреш) — fire-and-forget POST /api/chats/<x>/read
+  // (чтобы hh-сторона стала прочитанной) и POST /refresh (чтобы
+  // подтянуть свежую историю с hh.ru в фоне).
+  (function activateOnLoad() {
+    const composer = document.getElementById('chatComposer');
+    if (!composer) return;
+    const id = composer.getAttribute('data-chat-uuid');
+    if (!id) return;
+    try {
+      fetch('/api/chats/' + encodeURIComponent(id) + '/read', {
+        method: 'POST',
+        credentials: 'same-origin',
+      }).catch(() => { /* ignore */ });
+    } catch (_) {}
+    try { refreshActiveChat(id); } catch (_) {}
+  })();
+
+  // ────────────────────────────────────────────────────────────────
+  // Sync chats with hh.ru + filter toggle + resizable splitter.
+  //
+  // 1. Стартовый sync на лоаде страницы (чаты у простого юзера сами не
+  //    подсасываются, потому что cookies hh.ru живут только в нашей
+  //    серверной сессии — фронт триггерит синк, бэк ходит к API).
+  // 2. Дальше — никакого polling-фронтенда. Сервер сам пушит свежий
+  //    снимок через WebSocket /ws/chats, как только в БД что-то
+  //    меняется (Postgres LISTEN/NOTIFY, см. app/services/realtime.py).
+  //    Если WS недоступен (старый прокси без upgrade и т.п.) —
+  //    падаем на резервный sync каждые ~30 сек, чтобы UI хоть как-то
+  //    обновлялся.
+  // 3. Тоггл «Только актуальные» — клиентский фильтр по
+  //    data-chat-relevant; SSR-страница изначально показывает все чаты.
+  // 4. Resizable splitter между списком чатов и активным диалогом.
+  // 5. Время и в списке, и в сообщениях — в локальной TZ юзера
+  //    (если не Москва), читаем data-iso (UTC) и перерисовываем.
+  // ────────────────────────────────────────────────────────────────
+  (function chatsPage() {
+    const WS_RECONNECT_MIN_MS = 1500;
+    const WS_RECONNECT_MAX_MS = 15000;
+
+    const root = document;
+    const list = root.querySelector('[data-chats-list]');
+    const statusDot = root.querySelector('[data-chats-status-dot]');
+    const statusText = root.querySelector('[data-chats-status-text]');
+    const filterButtons = root.querySelectorAll('[data-chats-filter]');
+
+    let syncing = false;
+    let lastSyncAt = null;
+
+    // ── Filter (all / relevant) ─────────────────────────────────────
+    const STORAGE_KEY = 'offerday_chats_filter';
+    let currentFilter = 'all';
+    try {
+      currentFilter = window.localStorage.getItem(STORAGE_KEY) || 'all';
+    } catch (_) { /* localStorage может быть отключён */ }
+
+    // Каждый фильтр — это предикат над `chat-item`. `all` оставляем
+    // отдельной веткой, чтобы не пересчитывать ничего лишнего.
+    const FILTER_MATCHERS = {
+      all: () => true,
+      relevant: (it) => it.getAttribute('data-chat-relevant') === '1',
+      refusal: (it) => it.getAttribute('data-chat-status') === 'refusal',
+      pending: (it) => it.getAttribute('data-chat-status') === 'pending',
+    };
+    const EMPTY_LABEL = {
+      all: '0 чатов',
+      relevant: '0 актуальных чатов',
+      refusal: '0 чатов с отказом',
+      pending: '0 чатов в ожидании',
+    };
+
+    function applyFilter(filter) {
+      if (!FILTER_MATCHERS[filter]) filter = 'all';
+      currentFilter = filter;
+      try { window.localStorage.setItem(STORAGE_KEY, filter); } catch (_) {}
+      filterButtons.forEach((b) => {
+        const active = b.getAttribute('data-chats-filter') === filter;
+        b.classList.toggle('bg-zinc-900', active);
+        b.classList.toggle('text-white', active);
+        b.classList.toggle('bg-white', !active);
+        b.classList.toggle('border', !active);
+        b.classList.toggle('border-zinc-200', !active);
+        b.classList.toggle('text-zinc-600', !active);
+      });
+      if (!list) return;
+      // CSS (см. ``.chat-status-badge``) скрывает бейджи статусов,
+      // когда у списка ``data-filter="relevant"`` — потому что под
+      // этим фильтром все видимые чаты заведомо ``interested``.
+      list.setAttribute('data-filter', filter);
+      const items = list.querySelectorAll('.chat-item');
+      const matcher = FILTER_MATCHERS[filter];
+      let visible = 0;
+      items.forEach((it) => {
+        const show = matcher(it);
+        it.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      const existingEmpty = list.querySelector('[data-chats-empty-filter]');
+      if (visible === 0 && items.length > 0) {
+        if (!existingEmpty) {
+          const div = document.createElement('div');
+          div.className = 'p-8 text-center text-xs text-zinc-400';
+          div.setAttribute('data-chats-empty-filter', '');
+          div.textContent = EMPTY_LABEL[filter] || '0 чатов';
+          list.appendChild(div);
+        }
+      } else if (existingEmpty) {
+        existingEmpty.remove();
+      }
+    }
+
+    // Обновление чисел рядом с фильтрами (после фонового sync).
+    function applyFilterCounts(counts) {
+      if (!counts) return;
+      ['all', 'relevant', 'refusal', 'pending'].forEach((k) => {
+        const el = root.querySelector('[data-filter-count="' + k + '"]');
+        if (!el) return;
+        const n = counts[k];
+        el.textContent = (n == null ? 0 : n);
+      });
+    }
+    filterButtons.forEach((b) => {
+      b.addEventListener('click', () => applyFilter(b.getAttribute('data-chats-filter')));
+    });
+    applyFilter(currentFilter);
+
+    // ── Status indicator ────────────────────────────────────────────
+    function setStatus(state, text) {
+      if (statusText) statusText.textContent = text;
+      if (!statusDot) return;
+      statusDot.classList.remove('bg-zinc-300', 'bg-amber-400', 'bg-emerald-500', 'bg-rose-500');
+      const map = { idle: 'bg-zinc-300', syncing: 'bg-amber-400', ok: 'bg-emerald-500', error: 'bg-rose-500' };
+      statusDot.classList.add(map[state] || 'bg-zinc-300');
+    }
+
+    function timeAgo(ts) {
+      if (!ts) return '—';
+      const sec = Math.round((Date.now() - ts) / 1000);
+      if (sec < 5) return 'только что';
+      if (sec < 60) return sec + ' сек назад';
+      const min = Math.round(sec / 60);
+      if (min < 60) return min + ' мин назад';
+      const h = Math.round(min / 60);
+      return h + ' ч назад';
+    }
+    setInterval(() => {
+      if (!syncing && lastSyncAt) {
+        setStatus('ok', 'обновлено ' + timeAgo(lastSyncAt));
+      }
+    }, 5000);
+
+    // ── Sync request ───────────────────────────────────────────────
+    // Бэкенд возвращает структурированную ошибку:
+    //   { detail: { error: "<code>", message: "<human-readable>" } }
+    // Парсим её, чтобы показывать осмысленное сообщение, а не общее
+    // «ошибка синхронизации».
+    function sync(opts) {
+      if (syncing) return Promise.resolve(null);
+      syncing = true;
+      setStatus('syncing', 'обновляем…');
+
+      return fetch('/api/chats/sync', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' },
+      })
+        .then(async (r) => {
+          if (r.ok) return r.json();
+          // Парсим JSON-тело даже у не-ok ответов — там лежит detail.
+          let body = null;
+          try { body = await r.json(); } catch (_) { /* пустое тело */ }
+          const detail = body && body.detail;
+          let code = null;
+          let msg = null;
+          if (detail && typeof detail === 'object') {
+            code = detail.error || null;
+            msg = detail.message || null;
+          } else if (typeof detail === 'string') {
+            code = detail;
+          }
+          const err = new Error(code || ('http_' + r.status));
+          err.status = r.status;
+          err.code = code;
+          err.message_human = msg;
+          throw err;
+        })
+        .then((data) => {
+          lastSyncAt = Date.now();
+          setStatus('ok', 'обновлено только что');
+          // Перерисовываем список из свежего снимка БД, который
+          // sync теперь возвращает в data.chats. Это лечит сценарии:
+          //   * порядок чатов на hh.ru поменялся (юзер где-то
+          //     ответил/получил ответ) — у нас он подъезжает без F5;
+          //   * пришёл новый чат — добавляется в список без reload;
+          //   * превью/applicant_state поменялись — обновляется на
+          //     месте.
+          // SSR-страница изначально показывает чаты из БД, дальше
+          // фронт сам клиентски обновляет панель после каждого
+          // sync'а — DOM-операция дешевле, чем полный reload, и не
+          // ломает скролл/активный диалог/composer.
+          if (data && Array.isArray(data.chats)) {
+            try { renderChatsList(data.chats); } catch (_) { /* ignore */ }
+          }
+          return data;
+        })
+        .catch((err) => {
+          if (!err) {
+            setStatus('error', 'ошибка синхронизации');
+            return null;
+          }
+          // Сетевые ошибки (нет ответа от сервера) — TypeError.
+          if (err.status === undefined && err.code === undefined) {
+            setStatus('error', 'нет связи с сервером');
+            return null;
+          }
+          if (err.code === 'no_hh_session') {
+            setStatus('error', err.message_human || 'нет hh-сессии');
+          } else if (err.code === 'hh_session_expired') {
+            setStatus('error', err.message_human || 'сессия hh.ru истекла');
+          } else if (err.code === 'sync_failed') {
+            setStatus('error', err.message_human || 'ошибка синхронизации');
+          } else if (err.status === 401) {
+            setStatus('error', 'нужен вход на hh.ru');
+          } else {
+            setStatus('error', err.message_human || ('ошибка ' + (err.status || '')));
+          }
+          // Поднимаем в console для дебага — в логах сервера будет полный трейс.
+          if (window && window.console) {
+            console.warn('chats sync failed', err.status, err.code, err.message_human);
+          }
+          return null;
+        })
+        .finally(() => {
+          syncing = false;
+        });
+    }
+
+    // ── Resizable splitter (сохраняем в localStorage) ──────────────
+    const SIDEBAR_KEY = 'offerday_chats_sidebar_w';
+    const chatsRoot = root.querySelector('[data-chats-root]');
+    const sidebar = root.querySelector('[data-chats-sidebar]');
+    const resizer = root.querySelector('[data-chats-resizer]');
+    const MIN_W = 240;
+    const MAX_FRACTION = 0.7;
+    function applySidebarWidth(px) {
+      if (!sidebar || !chatsRoot) return;
+      const totalW = chatsRoot.getBoundingClientRect().width;
+      const maxW = Math.max(MIN_W + 80, Math.floor(totalW * MAX_FRACTION));
+      const w = Math.max(MIN_W, Math.min(maxW, Math.round(px)));
+      sidebar.style.width = w + 'px';
+      return w;
+    }
+    try {
+      const saved = parseInt(window.localStorage.getItem(SIDEBAR_KEY) || '', 10);
+      if (saved && !isNaN(saved)) applySidebarWidth(saved);
+    } catch (_) {}
+    if (resizer && sidebar && chatsRoot) {
+      let dragging = false;
+      let lastW = sidebar.getBoundingClientRect().width;
+      const onDown = (ev) => {
+        dragging = true;
+        resizer.classList.add('is-dragging');
+        document.body.classList.add('chats-resizing');
+        ev.preventDefault();
+      };
+      const onMove = (ev) => {
+        if (!dragging) return;
+        const rect = chatsRoot.getBoundingClientRect();
+        const x = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+        const w = applySidebarWidth(x - rect.left);
+        lastW = w;
+      };
+      const onUp = () => {
+        if (!dragging) return;
+        dragging = false;
+        resizer.classList.remove('is-dragging');
+        document.body.classList.remove('chats-resizing');
+        try { window.localStorage.setItem(SIDEBAR_KEY, String(lastW)); } catch (_) {}
+      };
+      resizer.addEventListener('mousedown', onDown);
+      resizer.addEventListener('touchstart', onDown, { passive: false });
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('touchmove', onMove, { passive: false });
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('touchend', onUp);
+      // Клавиатура: ← / → меняют ширину на 24px.
+      resizer.addEventListener('keydown', (ev) => {
+        const cur = sidebar.getBoundingClientRect().width;
+        if (ev.key === 'ArrowLeft') {
+          const w = applySidebarWidth(cur - 24);
+          try { window.localStorage.setItem(SIDEBAR_KEY, String(w)); } catch (_) {}
+          ev.preventDefault();
+        } else if (ev.key === 'ArrowRight') {
+          const w = applySidebarWidth(cur + 24);
+          try { window.localStorage.setItem(SIDEBAR_KEY, String(w)); } catch (_) {}
+          ev.preventDefault();
+        }
+      });
+    }
+
+    // ── Рендер списка чатов из JSON-снимка ──────────────────────────
+    // Шейпа карточки — см. ``list_chat_cards`` в ``app/db/dashboard_data.py``.
+    // Активный чат подсвечиваем по текущему URL (``?id=<x>``), чтобы
+    // не зависеть от поля is_active в SSR-контексте.
+    function activeChatIdFromUrl() {
+      try {
+        const u = new URL(window.location.href);
+        return u.searchParams.get('id');
+      } catch (_) { return null; }
+    }
+    function escAttr(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[m]));
+    }
+    function chatsFingerprint(cards, activeId) {
+      // Лёгкий «снимок» состояния списка: если ничего значимого не
+      // поменялось, пропускаем innerHTML-перерисовку — это и быстрее,
+      // и не дёргает скролл/выделение текста, если юзер что-то читает.
+      return (activeId || '') + '|' + cards.map((c) =>
+        [c.id, c.last_message_at_iso || '', c.unread_messages || 0,
+         c.status_label || c.preview_label || '',
+         c.status_kind || c.preview_kind || '',
+         c.last_message_preview || '',
+         c.is_relevant ? 1 : 0,
+         c.title || '', c.subtitle || ''].join('\u001f')
+      ).join('\u001e');
+    }
+    function renderChatsList(cards) {
+      if (!list) return;
+      const activeId = activeChatIdFromUrl();
+      const fp = chatsFingerprint(cards, activeId);
+      if (list.getAttribute('data-fingerprint') === fp) return;
+      const html = cards.map((c) => {
+        const isActive = activeId && c.id === activeId;
+        const cls = 'chat-item block p-4 flex items-start gap-4 cursor-pointer hover:bg-white transition-colors no-underline text-inherit'
+          + (isActive ? ' bg-white border-l-4 border-[#16a34a]' : '');
+        const unread = (typeof c.unread_messages === 'number' && c.unread_messages > 0)
+          ? `<span class="unread-badge ${c.unread_messages > 99 ? 'is-overflow' : ''}">${c.unread_messages > 99 ? '99+' : String(c.unread_messages)}</span>`
+          : '';
+        const statusCss = c.status_css || c.preview_css || '';
+        const statusLabel = c.status_label || c.preview_label || '';
+        const statusKind = c.status_kind || c.preview_kind || '';
+        const sub = c.subtitle || '';
+        const last = c.last_message_preview || '';
+        const lastRow = (statusKind === 'interested' && last)
+          ? `<p class="text-xs text-zinc-400 truncate mt-1">${escAttr(last)}</p>`
+          : '';
+        return (
+          `<a href="${escAttr(c.href)}" data-chat-id="${escAttr(c.id)}" data-chat-relevant="${c.is_relevant ? '1' : '0'}" data-chat-status="${escAttr(statusKind)}" class="${cls}">`
+          + `<div class="w-12 h-12 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-sm shrink-0">${escAttr(c.initials)}</div>`
+          + `<div class="flex-1 min-w-0">`
+          + `<div class="flex justify-between items-baseline gap-2 mb-0.5">`
+          + `<h4 class="text-sm font-bold truncate">${escAttr(c.title)}</h4>`
+          + `<div class="flex items-center gap-1.5 shrink-0">`
+          + `<span class="text-[10px] text-zinc-400 mono chat-time" data-iso="${escAttr(c.last_message_at_iso || '')}">${escAttr(c.last_message_at || '')}</span>`
+          + unread
+          + `</div>`
+          + `</div>`
+          + `<div class="flex justify-between items-center gap-2">`
+          + `<span class="text-xs text-zinc-500 truncate min-w-0">${escAttr(sub)}</span>`
+          + `<span class="chat-status-badge shrink-0 ${escAttr(statusCss)}">${escAttr(statusLabel)}</span>`
+          + `</div>`
+          + lastRow
+          + `</div>`
+          + `</a>`
+        );
+      }).join('');
+      // Сохраняем scroll-позицию, чтобы перерендер не дёргал список.
+      const prevScroll = list.scrollTop;
+      if (cards.length === 0) {
+        list.innerHTML = '<div class="p-8 text-center text-xs text-zinc-400" data-chats-empty>0 чатов</div>';
+      } else {
+        list.innerHTML = html;
+      }
+      list.scrollTop = prevScroll;
+      list.setAttribute('data-fingerprint', fp);
+      // Перерисованный кусок мог содержать ``data-iso`` с UTC-временем
+      // — пересчитываем под локальную TZ, если она не Москва.
+      relocalizeChatsTimes(list);
+      // Фильтр «все/актуальные» применяется поверх — без него вновь
+      // отрисованные элементы всегда видны.
+      applyFilter(currentFilter);
+    }
+
+    // ── Восстановление scroll'а списка чатов ───────────────────────
+    // Юзер кликнул чат → ушли на /chats?id=<x>; на новой странице
+    // SSR отрендерил список с нуля и scrollTop=0. До отображения
+    // подтягиваем сохранённую позицию из sessionStorage и убираем
+    // её, чтобы при следующем входе на /chats без клика список не
+    // прыгал внезапно вниз.
+    try {
+      const saved = parseInt(window.sessionStorage.getItem(SCROLL_KEY) || '', 10);
+      if (list && saved && !isNaN(saved)) {
+        list.scrollTop = saved;
+      }
+      window.sessionStorage.removeItem(SCROLL_KEY);
+    } catch (_) { /* ignore */ }
+
+    relocalizeChatsTimes(document);
+
+    // ── Live-обновления через WebSocket ─────────────────────────────
+    // Сервер сам пушит свежий снапшот сюда, как только в БД что-то
+    // меняется у юзера (Postgres LISTEN/NOTIFY → ChatHub →
+    // /ws/chats). Никакого polling'а на фронте нет.
+    //
+    // Соединение поднимаем после первой sync()-загрузки (она нужна,
+    // чтобы дернуть hh.ru за свежими данными перед тем, как сесть
+    // слушать). Дальше — push-only.
+    //
+    // Если /ws/chats недоступен (старый прокси без upgrade, корпо-
+    // ративный TLS-MITM) — страница работает без авто-обновлений;
+    // юзер увидит свежие данные после ручной перезагрузки.
+    function applySnapshotPayload(data) {
+      if (!data || typeof data !== 'object') return;
+      if (Array.isArray(data.chats)) {
+        try { renderChatsList(data.chats); } catch (_) {}
+      }
+      if (data.chat_counts) {
+        try { applyFilterCounts(data.chat_counts); } catch (_) {}
+      }
+      lastSyncAt = Date.now();
+      setStatus('ok', 'обновлено только что');
+    }
+
+    let ws = null;
+    let wsReconnectDelay = WS_RECONNECT_MIN_MS;
+    let wsClosedByPage = false;
+
+    function connectWs() {
+      if (wsClosedByPage) return;
+      let url;
+      try {
+        const scheme = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+        url = scheme + '//' + window.location.host + '/ws/chats';
+      } catch (_) {
+        return;
+      }
+      let sock;
+      try {
+        sock = new WebSocket(url);
+      } catch (_) {
+        return;
+      }
+      ws = sock;
+      sock.addEventListener('open', () => {
+        wsReconnectDelay = WS_RECONNECT_MIN_MS;
+      });
+      sock.addEventListener('message', (ev) => {
+        let payload = null;
+        try { payload = JSON.parse(ev.data); } catch (_) { return; }
+        if (!payload || typeof payload !== 'object') return;
+        if (payload.type === 'snapshot') {
+          applySnapshotPayload(payload);
+        } else if (payload.type === 'ping') {
+          // Ответный pong — серверу не нужен, но и не вредит.
+          try { sock.send(JSON.stringify({ type: 'pong' })); } catch (_) {}
+        }
+      });
+      const reopen = () => {
+        ws = null;
+        if (wsClosedByPage) return;
+        const delay = Math.min(WS_RECONNECT_MAX_MS, wsReconnectDelay);
+        wsReconnectDelay = Math.min(WS_RECONNECT_MAX_MS, wsReconnectDelay * 2);
+        setTimeout(connectWs, delay);
+      };
+      sock.addEventListener('close', reopen);
+      sock.addEventListener('error', () => {
+        // close прилетит сам после error — там и переподключимся.
+      });
+    }
+
+    window.addEventListener('beforeunload', () => {
+      wsClosedByPage = true;
+      if (ws) { try { ws.close(); } catch (_) {} }
+    });
+
+    // Старт: один sync() на загрузке (он же дёрнет hh.ru/habr.com),
+    // дальше push-only через WebSocket. Параллельно работает
+    // backend-шедулер chats_sync — он раз в 30с обновляет данные
+    // в БД для всех онлайн-юзеров и эмитит NOTIFY.
+    sync();
+    connectWs();
+  })();
+</script>
+</main>
+<script>
+        (function () {
+            const btn = document.getElementById('logoutBtn');
+            if (!btn) return;
+            btn.addEventListener('click', async () => {
+                try {
+                    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+                } catch (e) { /* ignore */ }
+                window.location.href = '/';
+            });
+        })();
+    </script></body></html>
