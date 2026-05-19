@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offerday — Один кабинет вместо 20 сайтов</title>
+    
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    <style>
+        :root {
+            --bg: #f0fdf4;
+            --fg: #09090b;
+            --muted: #71717a;
+            --border: #e4e4e7;
+            --accent: #16a34a;
+            --surface: #fbfbfc;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            color: var(--fg);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-inner {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.04em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--fg);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--fg);
+        }
+
+        .btn-black {
+            background: var(--fg);
+            color: white;
+            border: none;
+        }
+
+        
+        .hero {
+            padding: 120px 40px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 80px;
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            line-height: 0.95;
+            margin-bottom: 32px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-lg:active {
+            transform: scale(0.98);
+        }
+
+        
+        .logos {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        .logos-track {
+            display: flex;
+            gap: 60px;
+            width: max-content;
+            animation: scroll 40s linear infinite;
+        }
+
+        .logo-item {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--muted);
+            filter: grayscale(1);
+            opacity: 0.5;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        
+        .section {
+            padding: 60px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section#pricing {
+            max-width: 1200px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        
+        .visual-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matching-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 2;
+        }
+
+        .matching-line {
+            position: absolute;
+            height: 2px;
+            background: var(--accent);
+            width: 100px;
+            top: 50%;
+            left: 280px;
+            z-index: 1;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .toggle-container {
+            display: inline-flex;
+            background: var(--surface);
+            padding: 4px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            margin-top: 32px;
+        }
+
+        .toggle-btn {
+            padding: 8px 24px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: var(--accent);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .price-card {
+            border: 1px solid var(--border);
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 40px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-card.featured {
+            border: 2px solid var(--accent);
+            position: relative;
+        }
+
+        .featured-tag {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .price-val {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin: 24px 0;
+        }
+
+        .price-features {
+            list-style: none;
+            flex-grow: 1;
+            margin-bottom: 40px;
+        }
+
+        .price-features li {
+            font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f4f4f5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price-features li::before {
+            content: "→";
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        
+        .faq {
+            background: #ffffff;
+            padding: 60px 40px;
+        }
+
+        .faq-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .faq-item summary {
+            list-style: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .faq-item p {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        
+        .cta-final {
+            padding: 100px 60px;
+            max-width: 1400px;
+            margin: 40px auto;
+            text-align: center;
+            background: var(--fg);
+            color: white;
+            border-radius: 24px;
+        }
+
+        .cta-final h2 {
+            font-size: 64px;
+            color: white;
+        }
+
+        
+        .text-accent { color: var(--accent); }
+        .mono { font-family: var(--font-mono); font-size: 13px; }
+
+        @media (max-width: 900px) {
+            .grid-2, .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 48px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <div class="logo"><div class="logo-dot"></div> OFFERDAY</div>
+            <div class="nav-links">
+                <a href="#how">Как это работает</a>
+                <a href="#pricing">Тарифы</a>
+                <a href="#reviews">Отзывы</a>
+                <a href="#tools">Инструменты</a>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-sm" onclick="location.href='/login'">Войти</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        
+        <h1>Твой оффер уже опубликован.<br><span class="text-accent">Ты просто не там смотришь.</span></h1>
+        <p>hh.ru, Upwork и LinkedIn движутся за секунды. Offerday откликается на каждую подходящую вакансию за вас с AI-точностью. 20+ платформ — один кабинет.</p>
+        <div class="hero-actions">
+            <button class="btn-lg btn-black" onclick="location.href='/login'">Попробовать бесплатно →</button>
+        </div>
+    </section>
+
+    <div class="logos">
+        <div class="logos-track">
+            
+            <span class="logo-item">hh.ru</span>
+            <span class="logo-item">Хабр Карьера</span>
+            <span class="logo-item">Geekjob</span>
+            <span class="logo-item">Upwork</span>
+            <span class="logo-item">Wellfound</span>
+            <span class="logo-item">Otta</span>
+            <span class="logo-item">LinkedIn</span>
+            <span class="logo-item">Glassdoor</span>
+            <span class="logo-item">Indeed</span>
+            <span class="logo-item">Superjob</span>
+            
+            <span class="logo-item">hh.ru</span>
+            <span class="logo-item">Хабр Карьера</span>
+            <span class="logo-item">Geekjob</span>
+            <span class="logo-item">Upwork</span>
+            <span class="logo-item">Wellfound</span>
+            <span class="logo-item">Otta</span>
+            <span class="logo-item">LinkedIn</span>
+            <span class="logo-item">Glassdoor</span>
+            <span class="logo-item">Indeed</span>
+            <span class="logo-item">Superjob</span>
+        </div>
+    </div>
+
+    <section class="section grid-2" id="how">
+        <div>
+            <span class="label">ДВИЖОК МАТЧИНГА</span>
+            <h2>Умная фильтрация, которая понимает ваш уровень.</h2>
+            <p class="section-desc">Наш ИИ не просто ищет по ключевым словам. Он анализирует глубину опыта, нюансы стека и зарплатные ожидания. Никаких откликов на недостижимые вакансии — только высоковероятные совпадения.</p>
+            
+        </div>
+        <div class="visual-container">
+            <div style="width: 90%; background: white; border-radius: 12px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <div class="mono" style="font-size: 11px; color: var(--accent); margin-bottom: 12px;">→ ТОЛЬКО ЧТО ОТКЛИКНУЛИСЬ НА 5 ВАКАНСИЙ</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 8px;">
+                        <div><div style="font-weight: 600; font-size: 13px;">Senior Backend (Go)</div><div style="font-size: 11px; color: var(--muted);">Revolut • $6k-$8k</div></div>
+                        <div style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Отклик</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 8px;">
+                        <div><div style="font-weight: 600; font-size: 13px;">Full Stack (React/Node)</div><div style="font-size: 11px; color: var(--muted);">Ozon • $5k-$7k</div></div>
+                        <div style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Отклик</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 8px;">
+                        <div><div style="font-weight: 600; font-size: 13px;">DevOps Engineer</div><div style="font-size: 11px; color: var(--muted);">Yandex • $4k-$6k</div></div>
+                        <div style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Отклик</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 8px;">
+                        <div><div style="font-weight: 600; font-size: 13px;">Team Lead (Java)</div><div style="font-size: 11px; color: var(--muted);">Sber • $8k-$10k</div></div>
+                        <div style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Отклик</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 8px;">
+                        <div><div style="font-weight: 600; font-size: 13px;">ML Engineer (Python)</div><div style="font-size: 11px; color: var(--muted);">Tinkoff • $7k-$9k</div></div>
+                        <div style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Отклик</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section grid-2" style="direction: rtl;">
+        <div style="direction: ltr;">
+            <span class="label">КОНТЕКСТНЫЕ ПИСЬМА</span>
+            <h2>AI-сопроводительные, которые не звучат как AI.</h2>
+            <p class="section-desc">Шаблонные сообщения игнорируют. Offerday ссылается на конкретные требования из описания вакансии и связывает их с вашими достижениями в каждом отклике.</p>
+            <button class="btn-sm">Примеры писем</button>
+        </div>
+        <div class="visual-container" style="direction: ltr;">
+            <div style="width: 80%; background: white; padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.03);">
+                <div style="height: 12px; width: 40%; background: #eee; margin-bottom: 20px; border-radius: 2px;"></div>
+                <div style="height: 8px; width: 100%; background: #f4f4f5; margin-bottom: 10px; border-radius: 2px;"></div>
+                <div style="height: 8px; width: 95%; background: #f4f4f5; margin-bottom: 10px; border-radius: 2px;"></div>
+                <div style="height: 8px; width: 98%; background: #f4f4f5; margin-bottom: 10px; border-radius: 2px;"></div>
+                <div style="height: 8px; width: 70%; background: var(--accent); margin-top: 20px; border-radius: 2px; opacity: 0.6;"></div>
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #eee;"></div>
+                    <div style="width: 100px; height: 12px; background: #eee; align-self: center;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section grid-2" id="chats">
+        <div>
+            <span class="label">ЕДИНЫЙ ИНБОКС</span>
+            <h2>Все чаты в одном месте.</h2>
+            <p class="section-desc">Больше не нужно переключаться между hh.ru, Telegram, LinkedIn и всем остальным. Все сообщения от работодателей — в одной панели. Отвечайте быстрее, ничего не пропускайте.</p>
+        </div>
+        <div class="visual-container">
+            <div style="width: 90%; background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden;">
+                <div style="padding: 12px 20px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--border); text-align: left;">Чаты</div>
+                <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;">VK</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 13px;">VK • Рекрутер Анна</div>
+                            <div style="font-size: 12px; color: var(--muted);">Привет! Готовы обсудить детали оффера?</div>
+                        </div>
+                        <div style="margin-left: auto; font-size: 11px; color: var(--accent); font-weight: 600;">NEW</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;">OZ</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 13px;">Ozon • HR Lead</div>
+                            <div style="font-size: 12px; color: var(--muted);">Спасибо за интерес. Когда можете созвониться?</div>
+                        </div>
+                        <div style="margin-left: auto; font-size: 11px; color: var(--accent); font-weight: 600;">NEW</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #fce7f3; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;">YB</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 13px;">Яндекс • Техлид</div>
+                            <div style="font-size: 12px; color: var(--muted);">Отправил тестовое, жду обратной связи</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;">TG</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 13px;">Tinkoff • Head of Engineering</div>
+                            <div style="font-size: 12px; color: var(--muted);">Приглашаем на финальное интервью. Когда вам удобно?</div>
+                        </div>
+                        <div style="margin-left: auto; font-size: 11px; color: var(--accent); font-weight: 600;">NEW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="pricing">
+        <div class="pricing-header">
+            <span class="label">ТАРИФЫ</span>
+            <h2>Честные цены для тех, кто ищет всерьёз.</h2>
+            <div class="toggle-container" id="priceToggle">
+                <button class="toggle-btn" data-days="3">3 ДНЯ</button>
+                <button class="toggle-btn active" data-days="7">7 ДНЕЙ</button>
+                <button class="toggle-btn" data-days="14">14 ДНЕЙ</button>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="price-card">
+                <div style="font-size: 12px; color: var(--muted); margin-top: -10px; margin-bottom: 16px;">0 ₽/день</div>
+                <div style="font-weight: 700; color: var(--muted);">FREE</div>
+                <div class="price-val">0₽</div>
+                <ul class="price-features">
+                    <li>30 откликов в день</li>
+                    <li>3 площадки на выбор</li>
+                    <li>Стандартный приоритет</li>
+                    <li>Без AI-сопроводительного</li>
+                </ul>
+                <button class="btn-lg btn-sm" onclick="location.href='/login'">Начать бесплатно</button>
+            </div>
+
+            <div class="price-card featured">
+                <div class="price-daily" style="font-size: 12px; color: var(--accent); font-weight: 600; margin-top: -10px; margin-bottom: 16px;">≈ 284 ₽/день <span style="text-decoration: line-through; color: var(--muted); font-weight: 400;">430 ₽</span></div>
+                <div class="featured-tag">ПОПУЛЯРНЫЙ</div>
+                <div style="font-weight: 700;">PRO</div>
+                <div class="price-val" id="proPrice">1990₽</div>
+                <ul class="price-features">
+                    <li>100 откликов в день</li>
+                    <li>Все 20+ площадок</li>
+                    <li>Отклик в течение часа</li>
+                    <li>AI-сопроводительное под каждую вакансию</li>
+                    <li>Умный алгоритматчинг</li>
+                </ul>
+                <button class="btn-lg btn-black" onclick="location.href='/login'">Получить Pro</button>
+            </div>
+
+            <div class="price-card">
+                <div class="price-daily" style="font-size: 12px; color: var(--accent); font-weight: 600; margin-top: -10px; margin-bottom: 16px;">≈ 427 ₽/день <span style="text-decoration: line-through; color: var(--muted); font-weight: 400;">645 ₽</span></div>
+                <div style="font-weight: 700;">PREMIUM</div>
+                <div class="price-val" id="premiumPrice">2990₽</div>
+                <ul class="price-features">
+                    <li>Неограниченные отклики</li>
+                    <li>Отклик в течение 5 минут</li>
+                    <li>Автоответы на анкеты</li>
+                    <li>Автоподнятие резюме</li>
+                    <li>Приоритетная поддержка</li>
+                </ul>
+                <button class="btn-lg btn-sm" onclick="location.href='/login'">Получить Premium</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="reviews">
+        <div style="text-align: center; margin-bottom: 48px;">
+            <span class="label">ОТЗЫВЫ</span>
+            <h2>Уже работают в лучших компаниях</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Алексей К.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"За 3 дня подписки откликнулся на 200+ вакансий. Через неделю был оффер в 2.5x от текущей зарплаты."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Мария С.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Думала, это очередной скам. Но AI-сопроводительные действительно читаются как человеческие."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Дмитрий В.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Релокация в ОАЭ за 2 недели. Offerday сэкономил мне минимум 40 часов рутины."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Анна П.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"От junior до middle меня переквалифицировали через 8 месяцев. Offerday помог найти первую работу."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Игорь М.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Фриланс больше не нужен. Постоянный поток офферов из разных стран."</p></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px;">
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Елена К.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Три оффера за неделю. Выбрала лучший. Сэкономила месяцы поиска."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Сергей Л.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Аккаунт на hh.ru не забанили — это уже показатель. Скорость отклика впечатляет."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Ольга Р.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Перешла в продуктовую компанию из аутсорса. Зарплата +70%, всё удалённо."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Андрей Н.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Backend разработчик с 5-летним опытом. До этого не знал, что можно так быстро."</p></div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);"><div style="font-weight: 700; margin-bottom: 8px;">Катерина Т.</div><p style="font-size: 13px; color: var(--muted); line-height: 1.5;">"Из Казани в Берлин за 3 недели. Релокация с помощью Offerday — реально."</p></div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <a href="https://t.me/offerday_reviews" target="_blank" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--fg); font-weight: 600;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.64 9.6C16.36 12.56 15.04 16.36 14.4 17.76C14.16 18.28 13.92 18.36 13.68 18.36C13.16 18.36 12.88 17.88 12.4 17.44C11.6 16.72 11.16 16.4 10.4 15.72C9.48 14.88 10.08 14.52 10.6 13.88C10.76 13.68 13.4 11.28 13.44 11.08C13.48 11 13.44 10.92 13.32 10.84C13.2 10.76 12.92 10.68 12.6 10.96C12.16 11.32 11.24 12.12 10.48 12.76C10.32 12.9 10.08 12.96 9.88 12.96C9.64 12.96 9.32 12.88 9.08 12.76C8.64 12.56 7.84 12.24 7.08 11.88C6.16 11.44 5.44 11.2 5.44 10.64C5.44 10.36 5.68 10.08 6.2 9.8C7.64 9.04 9.4 8.16 10.72 7.52C13.08 6.36 15.04 5.64 15.68 5.44C17.36 4.92 17.76 5.84 17.76 6.4C17.76 6.64 17.72 7.12 17.64 7.44C17.56 7.84 16.88 9.2 16.64 9.6Z" fill="#0088cc"></path>
+                </svg>
+                Больше отзывов в Telegram
+            </a>
+            <button class="btn-lg btn-black" style="margin-top: 8px;">Смотреть все отзывы →</button>
+        </div>
+    </section>
+
+    <section class="faq" id="faq">
+        <div class="faq-inner">
+            <h2 style="text-align: center; margin-bottom: 40px;">Вопросы</h2>
+            <details class="faq-item" open="">
+                <summary>Безопасны ли мои аккаунты? <span>+</span></summary>
+                <p>Мы используем зеркалирование сессий и headless-браузеры с ротацией прокси, чтобы поведение вашего аккаунта было неотличимо от человеческого. На сегодня — 0 банов.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Работает ли с зарубежными площадками? <span>+</span></summary>
+                <p>Да. Offerday работает с Upwork, LinkedIn, Glassdoor и Otta, а также с СНГ-площадками типа hh.ru и Хабр Карьера.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Что если я найду работу посреди подписки? <span>+</span></summary>
+                <p>Поздравляем. Подписка не продлевается автоматически. Можно поставить на паузу и сохранить оставшиеся дни на следующий поиск.</p>
+            </details>
+        </div>
+    </section>
+
+    <section class="cta-final">
+        <div class="badge" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;">ФИНАЛЬНЫЙ ШАГ</div>
+        <h2>Результаты без усилий.</h2>
+        <p style="color: #a1a1aa; margin: 24px auto; max-width: 500px;">Присоединяйтесь к 4 500+ разработчикам, которые получили офферы менее чем за 14 дней с Offerday.</p>
+        <button class="btn-lg btn-sm" style="background: white; border: none; padding: 20px 48px;" onclick="location.href='/login'">Запустить свой пайплайн</button>
+    </section>
+
+    <footer style="padding: 60px 40px; border-top: 1px solid var(--border); text-align: center;">
+        <div class="logo" style="justify-content: center; margin-bottom: 20px;"><div class="logo-dot"></div> OFFERDAY</div>
+        <div style="font-size: 13px; color: var(--muted);" class="mono">
+            © 2024 OFFERDAY SYSTEMS. ВСЕ ЛОГИ УДАЛЯЮТСЯ ПОСЛЕ ТРУДОУСТРОЙСТВА.
+        </div>
+    </footer>
+
+    <script>
+        const pricing = {
+            3: { pro: "990₽", premium: "1490₽", proDaily: "≈ 330 ₽/день", premiumDaily: "≈ 497 ₽/день", proOld: "430 ₽", premiumOld: "645 ₽" },
+            7: { pro: "1990₽", premium: "2990₽", proDaily: "≈ 284 ₽/день", premiumDaily: "≈ 427 ₽/день", proOld: "430 ₽", premiumOld: "645 ₽" },
+            14: { pro: "3290₽", premium: "4990₽", proDaily: "≈ 235 ₽/день", premiumDaily: "≈ 356 ₽/день", proOld: "430 ₽", premiumOld: "645 ₽" }
+        };
+
+        const buttons = document.querySelectorAll('.toggle-btn');
+        const proPrice = document.getElementById('proPrice');
+        const premPrice = document.getElementById('premiumPrice');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const days = btn.dataset.days;
+                proPrice.innerText = pricing[days].pro;
+                premPrice.innerText = pricing[days].premium;
+                
+                // Update daily prices
+                document.querySelectorAll('.price-card.featured .price-daily')[0].innerHTML = `${pricing[days].proDaily} <span style="text-decoration: line-through; color: var(--muted); font-weight: 400;">${pricing[days].proOld}</span>`;
+                document.querySelectorAll('.price-card:not(.featured):not(:first-child) .price-daily')[0].innerHTML = `${pricing[days].premiumDaily} <span style="text-decoration: line-through; color: var(--muted); font-weight: 400;">${pricing[days].premiumOld}</span>`;
+            });
+        });
+    </script>
+
+</body></html>
