@@ -17,5 +17,7 @@ from __future__ import annotations
 # noqa: F401 — импорт нужен только для регистрации клиента в
 # диспатчере через ``__init_subclass__``.
 from app.services.job_sites.hh import HHClient  # noqa: F401
+from app.services.job_sites.habr import HabrClient  # noqa: F401
+from app.services.job_sites.superjob import SuperJobClient  # noqa: F401
 
-__all__ = ["HHClient"]
+__all__ = ["HHClient", "HabrClient", "SuperJobClient"]

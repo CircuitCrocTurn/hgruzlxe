@@ -457,6 +457,7 @@ async def load_dashboard(
 _VACANCY_RESPONSE_PLATFORMS: dict[str, dict[str, str]] = {
     "hh":            {"label": "HH",       "css": "bg-red-50 text-red-600"},
     "habr":          {"label": "HABR",     "css": "bg-cyan-50 text-cyan-700"},
+    "superjob":      {"label": "SJ",       "css": "bg-emerald-50 text-emerald-700"},
     "linkedin":      {"label": "LI",       "css": "bg-blue-50 text-blue-700"},
     "upwork":        {"label": "UPWORK",   "css": "bg-emerald-50 text-emerald-700"},
     "otta":          {"label": "OTTA",     "css": "bg-zinc-100 text-zinc-700"},

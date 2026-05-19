@@ -813,6 +813,9 @@ video {
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .flex-col {
   flex-direction: column;
 }
@@ -1593,7 +1596,11 @@ video {
 <tbody class="divide-y divide-zinc-50">{% for r in recent_responses %}
 <tr class="hover:bg-zinc-50 transition-colors">
 <td class="px-6 py-4">
+{% if r.link %}
+<a class="text-sm font-bold hover:text-[#16a34a] hover:underline" href="{{ r.link }}" rel="noopener noreferrer" target="_blank">{{ r.title }}</a>
+{% else %}
 <div class="text-sm font-bold">{{ r.title }}</div>
+{% endif %}
 {% if r.salary %}<div class="text-[11px] text-zinc-400">{{ r.salary }}</div>{% endif %}
 </td>
 <td class="px-6 py-4">
@@ -1605,7 +1612,13 @@ video {
 <td class="px-6 py-4"><span class="text-xs font-semibold text-zinc-500 bg-zinc-50 px-2 py-0.5 rounded">{{ r.platform }}</span></td>
 <td class="px-6 py-4">
 <div class="flex items-center gap-2">
-<div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+{% if r.status_filter == 'sent' %}
+<div class="w-2 h-2 rounded-full bg-[#16a34a]"></div>
+{% elif r.status_filter == 'rejected' %}
+<div class="w-2 h-2 rounded-full bg-red-400"></div>
+{% else %}
+<div class="w-2 h-2 rounded-full bg-amber-500"></div>
+{% endif %}
 <span class="text-xs font-medium">{{ r.status }}</span>
 </div>
 </td>

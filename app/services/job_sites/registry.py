@@ -41,6 +41,7 @@ from typing import Any
 # где-то в рантайме.
 PLATFORM_HH = "hh"
 PLATFORM_HABR = "habr"
+PLATFORM_SUPERJOB = "superjob"
 PLATFORM_LINKEDIN = "linkedin"
 PLATFORM_GITHUB_JOBS = "github_jobs"
 PLATFORM_TELEGRAM_JOBS = "telegram_jobs"
@@ -90,6 +91,14 @@ PLATFORMS_CATALOG: list[dict[str, Any]] = [
         "icon_kind": "text",
         "icon_text": "HNT",
         "icon_bg": "bg-[#00b2ff]",
+    },
+    {
+        "slug": PLATFORM_SUPERJOB,
+        "name": "SuperJob.ru",
+        "subtitle": "Авто-регистрация",
+        "icon_kind": "text",
+        "icon_text": "SJ",
+        "icon_bg": "bg-[#009900]",
     },
     {
         "slug": PLATFORM_TELEGRAM_JOBS,
